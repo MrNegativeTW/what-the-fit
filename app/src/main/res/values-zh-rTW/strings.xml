@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">直男穿搭</string>
+
+    <!-- Common actions -->
+    <string name="action_back">返回</string>
+    <string name="action_save">儲存</string>
+    <string name="action_delete">刪除</string>
+    <string name="action_cancel">取消</string>
+    <string name="action_confirm">確定</string>
+    <string name="action_rename">重新命名</string>
+    <string name="action_settings">設定</string>
+    <string name="action_search_clear">清除搜尋</string>
+
+    <!-- Bottom navigation -->
+    <string name="nav_home">穿搭</string>
+    <string name="nav_wardrobe">衣櫥</string>
+
+    <!-- Generate -->
+    <string name="generate_title">選擇今天想搭配的部位</string>
+    <string name="generate_empty">尚無部位。請先到「衣櫥 › 部位」新增部位與衣物。</string>
+    <string name="generate_action">產生穿搭</string>
+
+    <!-- Result -->
+    <string name="result_title">今日穿搭</string>
+    <string name="result_no_item">無可用衣物</string>
+    <string name="result_reroll_all">全部重骰</string>
+    <string name="result_reroll_one">重骰 %1$s</string>
+
+    <!-- Clothes tabs -->
+    <string name="clothes_tab_items">衣物</string>
+    <string name="clothes_tab_parts">部位</string>
+    <string name="clothes_tab_brands">品牌</string>
+    <string name="clothes_tab_colors">顏色</string>
+    <string name="clothes_tab_occasions">場合</string>
+
+    <!-- Tag management (brands / colors / occasions) -->
+    <string name="tag_empty">尚無項目，點擊 + 新增</string>
+    <string name="tag_add_title">新增</string>
+    <string name="tag_delete_title">刪除「%1$s」？</string>
+
+    <!-- Item list -->
+    <string name="item_search_hint">搜尋衣物</string>
+    <string name="item_list_empty">尚無衣物，點擊 + 新增</string>
+    <string name="item_list_no_match">找不到符合的衣物</string>
+    <string name="item_add">新增衣物</string>
+    <string name="item_uncategorized">未分類</string>
+
+    <!-- Item edit -->
+    <string name="item_edit_title_add">新增衣物</string>
+    <string name="item_edit_title_edit">編輯衣物</string>
+    <string name="item_field_name">名稱</string>
+    <string name="item_field_parts">部位</string>
+    <string name="item_no_parts_hint">尚無部位，請先到「部位」分頁新增</string>
+    <string name="item_field_seasons">季節（僅標記，不影響產生）</string>
+    <string name="item_delete_confirm_title">刪除此衣物？</string>
+
+    <!-- Category -->
+    <string name="category_list_empty">尚無部位，點擊 + 新增</string>
+    <string name="category_drag_handle">拖曳排序</string>
+    <string name="category_add">新增部位</string>
+    <string name="category_add_title">新增部位</string>
+    <string name="category_delete_title">刪除部位「%1$s」？</string>
+    <string name="category_delete_body">刪除後只會解除與衣物的關聯，不會刪除衣物本身。</string>
+    <plurals name="category_item_count">
+        <item quantity="other">%d 件衣物</item>
+    </plurals>
+
+    <!-- Seasons -->
+    <string name="season_spring">春</string>
+    <string name="season_summer">夏</string>
+    <string name="season_autumn">秋</string>
+    <string name="season_winter">冬</string>
+
+    <!-- Clothing fields -->
+    <string name="item_field_colors">顏色</string>
+    <string name="item_field_occasions">場合</string>
+    <string name="item_field_brand">品牌</string>
+    <string name="item_field_material">材質</string>
+    <string name="item_field_notes">備註</string>
+
+    <!-- Default parts (seeded on first launch) -->
+    <string name="part_hat">帽子</string>
+    <string name="part_glasses">眼鏡</string>
+    <string name="part_jacket">外套</string>
+    <string name="part_top">上衣</string>
+    <string name="part_undershirt">內衣</string>
+    <string name="part_accessory">手飾</string>
+    <string name="part_pants">褲子</string>
+    <string name="part_underwear">內褲</string>
+    <string name="part_socks">襪子</string>
+    <string name="part_shoes">鞋子</string>
+
+    <!-- Default colors (seeded on first launch) -->
+    <string name="color_black">黑</string>
+    <string name="color_white">白</string>
+    <string name="color_gray">灰</string>
+
+    <!-- Occasions -->
+    <string name="occasion_casual">休閒</string>
+    <string name="occasion_work">上班</string>
+    <string name="occasion_formal">正式</string>
+    <string name="occasion_sport">運動</string>
+
+    <!-- Settings -->
+    <string name="settings_title">設定</string>
+    <string name="settings_theme">主題</string>
+    <string name="theme_system">系統</string>
+    <string name="theme_light">淺色</string>
+    <string name="theme_dark">深色</string>
+    <string name="settings_version">版本資訊</string>
+    <string name="settings_language">語言</string>
+</resources>

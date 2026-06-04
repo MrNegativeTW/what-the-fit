@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Straight Fit</string>
+
+    <!-- Common actions -->
+    <string name="action_back">Back</string>
+    <string name="action_save">Save</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_confirm">OK</string>
+    <string name="action_rename">Rename</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_search_clear">Clear search</string>
+
+    <!-- Bottom navigation -->
+    <string name="nav_home">Outfit</string>
+    <string name="nav_wardrobe">Wardrobe</string>
+
+    <!-- Generate -->
+    <string name="generate_title">Pick the parts to style today</string>
+    <string name="generate_empty">No parts yet. Add parts and clothes under Wardrobe › Parts first.</string>
+    <string name="generate_action">Generate Outfit</string>
+
+    <!-- Result -->
+    <string name="result_title">Today\'s Outfit</string>
+    <string name="result_no_item">No available item</string>
+    <string name="result_reroll_all">Reroll All</string>
+    <string name="result_reroll_one">Reroll %1$s</string>
+
+    <!-- Clothes tabs -->
+    <string name="clothes_tab_items">Clothes</string>
+    <string name="clothes_tab_parts">Parts</string>
+    <string name="clothes_tab_brands">Brands</string>
+    <string name="clothes_tab_colors">Colors</string>
+    <string name="clothes_tab_occasions">Occasions</string>
+
+    <!-- Tag management (brands / colors / occasions) -->
+    <string name="tag_empty">Nothing here yet. Tap + to add.</string>
+    <string name="tag_add_title">Add</string>
+    <string name="tag_delete_title">Delete “%1$s”?</string>
+
+    <!-- Item list -->
+    <string name="item_search_hint">Search clothes</string>
+    <string name="item_list_empty">No clothes yet. Tap + to add.</string>
+    <string name="item_list_no_match">No matching clothes</string>
+    <string name="item_add">Add clothing</string>
+    <string name="item_uncategorized">Uncategorized</string>
+
+    <!-- Item edit -->
+    <string name="item_edit_title_add">Add Clothing</string>
+    <string name="item_edit_title_edit">Edit Clothing</string>
+    <string name="item_field_name">Name</string>
+    <string name="item_field_parts">Parts</string>
+    <string name="item_no_parts_hint">No parts yet. Add them in the Parts tab first.</string>
+    <string name="item_field_seasons">Seasons (label only)</string>
+    <string name="item_delete_confirm_title">Delete this clothing?</string>
+
+    <!-- Category -->
+    <string name="category_list_empty">No parts yet. Tap + to add.</string>
+    <string name="category_drag_handle">Drag to reorder</string>
+    <string name="category_add">Add part</string>
+    <string name="category_add_title">Add Part</string>
+    <string name="category_delete_title">Delete part “%1$s”?</string>
+    <string name="category_delete_body">This only unlinks it from clothes; the clothes themselves are kept.</string>
+    <plurals name="category_item_count">
+        <item quantity="one">%d item</item>
+        <item quantity="other">%d items</item>
+    </plurals>
+
+    <!-- Seasons -->
+    <string name="season_spring">Spring</string>
+    <string name="season_summer">Summer</string>
+    <string name="season_autumn">Autumn</string>
+    <string name="season_winter">Winter</string>
+
+    <!-- Clothing fields -->
+    <string name="item_field_colors">Colors</string>
+    <string name="item_field_occasions">Occasions</string>
+    <string name="item_field_brand">Brand</string>
+    <string name="item_field_material">Material</string>
+    <string name="item_field_notes">Notes</string>
+
+    <!-- Default parts (seeded on first launch) -->
+    <string name="part_hat">Hat</string>
+    <string name="part_glasses">Glasses</string>
+    <string name="part_jacket">Jacket</string>
+    <string name="part_top">Top</string>
+    <string name="part_undershirt">Undershirt</string>
+    <string name="part_accessory">Accessories</string>
+    <string name="part_pants">Pants</string>
+    <string name="part_underwear">Underwear</string>
+    <string name="part_socks">Socks</string>
+    <string name="part_shoes">Shoes</string>
+
+    <!-- Default colors (seeded on first launch) -->
+    <string name="color_black">Black</string>
+    <string name="color_white">White</string>
+    <string name="color_gray">Grey</string>
+
+    <!-- Occasions -->
+    <string name="occasion_casual">Casual</string>
+    <string name="occasion_work">Work</string>
+    <string name="occasion_formal">Formal</string>
+    <string name="occasion_sport">Sport</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_theme">Theme</string>
+    <string name="theme_system">System</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="settings_version">Version</string>
+    <string name="settings_language">Language</string>
+</resources>

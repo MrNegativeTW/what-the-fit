@@ -1,0 +1,39 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"SessionStart\",\"additionalContext\":\"[SessionStart] 1. 一律先查看 docs/README.md，並進一步查看相關文件；建立 Plan 時必須考慮 SOLID 原則、Design Patterns、可維護性、可讀性，若產出 God Class/Ninja Code 會被開除。 2. 若有產生文件/註解/commit 訊息，將其視為論文等級、提交給專業期刊的說明文字，修辭保持簡潔、乾淨、簡短，禁止使用任何比喻、擬人、戲劇化形容、文學修辭、哲學評論、括號。 3. 若有產生計畫文件、實作步驟文件、分析文件，必須放置於 `/docs/ai-generated/`。\"}}'",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"systemMessage\":\"[PreToolUse] 1. 修改前需詢問 Issue type 和編號，branch 名稱格式為 `<type>/<issue_number>-<name>` 格式。\"}'",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PostToolUse\",\"additionalContext\":\"\"}}'",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}
