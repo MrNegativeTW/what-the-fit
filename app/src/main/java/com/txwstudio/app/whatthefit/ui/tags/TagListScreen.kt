@@ -2,6 +2,7 @@ package com.txwstudio.app.whatthefit.ui.tags
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -40,6 +41,7 @@ import com.txwstudio.app.whatthefit.data.entity.Tag
 import com.txwstudio.app.whatthefit.data.entity.TagWithCount
 import com.txwstudio.app.whatthefit.domain.model.TagKind
 import com.txwstudio.app.whatthefit.ui.components.ColorSwatch
+import com.txwstudio.app.whatthefit.ui.components.FabListBottomPadding
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
@@ -73,7 +75,11 @@ fun TagListScreen(
                 Text(stringResource(R.string.tag_empty), color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         } else {
-            LazyColumn(state = lazyListState, modifier = Modifier.fillMaxSize()) {
+            LazyColumn(
+                state = lazyListState,
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(bottom = FabListBottomPadding),
+            ) {
                 items(localList, key = { it.tag.id }) { entry ->
                     ReorderableItem(reorderState, key = entry.tag.id) { isDragging ->
                         TagRow(

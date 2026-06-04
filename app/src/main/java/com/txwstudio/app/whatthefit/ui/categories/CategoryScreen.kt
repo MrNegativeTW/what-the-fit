@@ -1,6 +1,7 @@
 package com.txwstudio.app.whatthefit.ui.categories
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -38,6 +39,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.txwstudio.app.whatthefit.R
 import com.txwstudio.app.whatthefit.data.entity.Category
 import com.txwstudio.app.whatthefit.data.entity.CategoryWithCount
+import com.txwstudio.app.whatthefit.ui.components.FabListBottomPadding
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
@@ -69,7 +71,11 @@ fun CategoryScreen(
                 )
             }
         } else {
-            LazyColumn(state = lazyListState, modifier = Modifier.fillMaxSize()) {
+            LazyColumn(
+                state = lazyListState,
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(bottom = FabListBottomPadding),
+            ) {
                 items(localList, key = { it.category.id }) { entry ->
                     ReorderableItem(reorderState, key = entry.category.id) { isDragging ->
                         CategoryListItem(

@@ -6,6 +6,7 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -45,6 +46,7 @@ import com.txwstudio.app.whatthefit.R
 import com.txwstudio.app.whatthefit.data.entity.ItemWithDetails
 import com.txwstudio.app.whatthefit.domain.model.TagKind
 import com.txwstudio.app.whatthefit.ui.components.ColorSwatch
+import com.txwstudio.app.whatthefit.ui.components.FabListBottomPadding
 
 @Composable
 fun ItemListScreen(
@@ -120,7 +122,10 @@ fun ItemListScreen(
                     )
                 }
             } else {
-                LazyColumn(Modifier.fillMaxSize()) {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(bottom = FabListBottomPadding),
+                ) {
                     items(items.itemCount) { index ->
                         items[index]?.let { item ->
                             ItemRow(
