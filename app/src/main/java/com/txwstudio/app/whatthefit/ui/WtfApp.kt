@@ -1,7 +1,13 @@
 package com.txwstudio.app.whatthefit.ui
 
 import android.app.Activity
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -66,6 +72,13 @@ import com.txwstudio.app.whatthefit.ui.theme.WTFTheme
 /** Search-field height matching Google's apps (Contacts/Drive) — sleeker than M3's 56dp default. */
 private val SearchBarHeight = 48.dp
 
+/**
+ * Shared duration for screen transitions. The app chrome, the search bar and bottom navigation,
+ * animates on this same timeline as the NavHost content so navigating to a detail screen reads as a
+ * single motion instead of the chrome being removed before the content finishes fading.
+ */
+private const val ScreenTransitionMillis = 300
+
 @Composable
 fun WtfApp(appViewModel: AppViewModel = hiltViewModel()) {
     val themeMode by appViewModel.themeMode.collectAsStateWithLifecycle()
@@ -101,7 +114,13 @@ fun WtfApp(appViewModel: AppViewModel = hiltViewModel()) {
 
         Scaffold(
             topBar = {
-                if (topLevel) {
+                AnimatedVisibility(
+                    visible = topLevel,
+                    enter = fadeIn(tween(ScreenTransitionMillis)) +
+                        expandVertically(tween(ScreenTransitionMillis), expandFrom = Alignment.Top),
+                    exit = fadeOut(tween(ScreenTransitionMillis)) +
+                        shrinkVertically(tween(ScreenTransitionMillis), shrinkTowards = Alignment.Top),
+                ) {
                     WardrobeSearchBar(
                         query = query,
                         onQueryChange = searchViewModel::onQueryChange,
@@ -110,7 +129,11 @@ fun WtfApp(appViewModel: AppViewModel = hiltViewModel()) {
                 }
             },
             bottomBar = {
-                if (topLevel) {
+                AnimatedVisibility(
+                    visible = topLevel,
+                    enter = fadeIn(tween(ScreenTransitionMillis)) + expandVertically(tween(ScreenTransitionMillis)),
+                    exit = fadeOut(tween(ScreenTransitionMillis)) + shrinkVertically(tween(ScreenTransitionMillis)),
+                ) {
                     NavigationBar {
                         TopLevelDestination.entries.forEach { dest ->
                             val label = stringResource(dest.labelRes)
@@ -145,6 +168,10 @@ fun WtfApp(appViewModel: AppViewModel = hiltViewModel()) {
             NavHost(
                 navController = navController,
                 startDestination = WtfRoutes.HOME,
+                // Fade on the same timeline as the chrome above (see ScreenTransitionMillis) so the
+                // search bar and bottom nav move together with the content rather than ahead of it.
+                enterTransition = { fadeIn(tween(ScreenTransitionMillis)) },
+                exitTransition = { fadeOut(tween(ScreenTransitionMillis)) },
                 // padding() moves content into the safe area; consumeWindowInsets() marks those
                 // insets as handled so each screen's own TopAppBar doesn't re-apply the status-bar
                 // inset (which caused a doubled gap above the title).

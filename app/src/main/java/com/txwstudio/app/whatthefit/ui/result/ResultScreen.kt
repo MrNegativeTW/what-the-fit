@@ -1,5 +1,6 @@
 package com.txwstudio.app.whatthefit.ui.result
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,12 +11,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MediumFloatingActionButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -32,6 +34,7 @@ import com.txwstudio.app.whatthefit.R
 import com.txwstudio.app.whatthefit.data.entity.Category
 import com.txwstudio.app.whatthefit.data.entity.ClothingItem
 import com.txwstudio.app.whatthefit.domain.model.OutfitSlot
+import com.txwstudio.app.whatthefit.ui.components.FabListBottomPadding
 import com.txwstudio.app.whatthefit.ui.theme.WTFTheme
 
 /**
@@ -79,16 +82,22 @@ fun ResultContent(
                 },
             )
         },
-        bottomBar = {
-            Button(
-                onClick = onRerollAll,
-                modifier = Modifier.fillMaxWidth().padding(16.dp),
-            ) {
-                Text(stringResource(R.string.result_reroll_all))
+        floatingActionButton = {
+            MediumFloatingActionButton(onClick = onRerollAll) {
+                Icon(
+                    Icons.Default.Shuffle,
+                    contentDescription = stringResource(R.string.result_reroll_all),
+                )
             }
         },
     ) { padding ->
-        LazyColumn(Modifier.padding(padding).fillMaxSize()) {
+        LazyColumn(
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxSize(),
+            // Same guard as the wardrobe lists: keep the last row clear of the floating FAB.
+            contentPadding = PaddingValues(bottom = FabListBottomPadding),
+        ) {
             items(slots, key = { it.category.id }) { slot ->
                 ResultRow(slot = slot, onReroll = { onRerollSingle(slot.category.id) })
                 HorizontalDivider()
@@ -122,7 +131,9 @@ private fun ResultRow(
             } else {
                 MaterialTheme.colorScheme.onSurfaceVariant
             },
-            modifier = Modifier.weight(1f).padding(horizontal = 12.dp),
+            modifier = Modifier
+                .weight(1f)
+                .padding(horizontal = 12.dp),
         )
         IconButton(onClick = onReroll) {
             Icon(
