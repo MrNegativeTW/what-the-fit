@@ -33,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -40,15 +41,40 @@ import com.txwstudio.app.whatthefit.R
 import com.txwstudio.app.whatthefit.data.entity.Category
 import com.txwstudio.app.whatthefit.data.entity.CategoryWithCount
 import com.txwstudio.app.whatthefit.ui.components.FabListBottomPadding
+import com.txwstudio.app.whatthefit.ui.theme.WTFTheme
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
+/**
+ * Stateful entry point. Owns the [CategoryViewModel] and forwards its state to [CategoryContent].
+ * Not previewable: it builds a Hilt ViewModel that reads Room. Preview [CategoryContent].
+ */
 @Composable
 fun CategoryScreen(
     modifier: Modifier = Modifier,
     viewModel: CategoryViewModel = hiltViewModel(),
 ) {
     val categories by viewModel.categories.collectAsStateWithLifecycle()
+    CategoryContent(
+        categories = categories,
+        onReorder = viewModel::reorder,
+        onAdd = viewModel::addCategory,
+        onRename = viewModel::renameCategory,
+        onDelete = viewModel::deleteCategory,
+        modifier = modifier,
+    )
+}
+
+/** Stateless body. Drag, dialogs and the local reorder copy are view state, so it previews fine. */
+@Composable
+fun CategoryContent(
+    categories: List<CategoryWithCount>,
+    onReorder: (List<Long>) -> Unit,
+    onAdd: (String) -> Unit,
+    onRename: (Long, String) -> Unit,
+    onDelete: (Category) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     var showAddDialog by remember { mutableStateOf(false) }
     var renameTarget by remember { mutableStateOf<Category?>(null) }
     var deleteTarget by remember { mutableStateOf<Category?>(null) }
@@ -87,7 +113,7 @@ fun CategoryScreen(
                                     contentDescription = stringResource(R.string.category_drag_handle),
                                     modifier = Modifier
                                         .draggableHandle(
-                                            onDragStopped = { viewModel.reorder(localList.map { it.category.id }) },
+                                            onDragStopped = { onReorder(localList.map { it.category.id }) },
                                         )
                                         .padding(end = 4.dp),
                                 )
@@ -111,7 +137,7 @@ fun CategoryScreen(
         TextInputDialog(
             title = stringResource(R.string.category_add_title),
             initial = "",
-            onConfirm = { viewModel.addCategory(it); showAddDialog = false },
+            onConfirm = { onAdd(it); showAddDialog = false },
             onDismiss = { showAddDialog = false },
         )
     }
@@ -119,7 +145,7 @@ fun CategoryScreen(
         TextInputDialog(
             title = stringResource(R.string.action_rename),
             initial = target.name,
-            onConfirm = { viewModel.renameCategory(target.id, it); renameTarget = null },
+            onConfirm = { onRename(target.id, it); renameTarget = null },
             onDismiss = { renameTarget = null },
         )
     }
@@ -129,7 +155,7 @@ fun CategoryScreen(
             title = { Text(stringResource(R.string.category_delete_title, target.name)) },
             text = { Text(stringResource(R.string.category_delete_body)) },
             confirmButton = {
-                TextButton(onClick = { viewModel.deleteCategory(target); deleteTarget = null }) {
+                TextButton(onClick = { onDelete(target); deleteTarget = null }) {
                     Text(stringResource(R.string.action_delete))
                 }
             },
@@ -200,4 +226,25 @@ private fun TextInputDialog(
             TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
         },
     )
+}
+
+private val sampleCategories = listOf(
+    CategoryWithCount(Category(id = 1, name = "帽子"), itemCount = 3),
+    CategoryWithCount(Category(id = 2, name = "上衣"), itemCount = 12),
+    CategoryWithCount(Category(id = 3, name = "外套"), itemCount = 5),
+    CategoryWithCount(Category(id = 4, name = "褲子"), itemCount = 7),
+)
+
+@Preview(name = "Categories", showBackground = true)
+@Composable
+private fun CategoryContentPreview() {
+    WTFTheme(dynamicColor = false) {
+        CategoryContent(
+            categories = sampleCategories,
+            onReorder = {},
+            onAdd = {},
+            onRename = { _, _ -> },
+            onDelete = {},
+        )
+    }
 }

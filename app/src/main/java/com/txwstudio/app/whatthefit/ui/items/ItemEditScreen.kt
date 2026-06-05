@@ -27,15 +27,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.txwstudio.app.whatthefit.R
+import com.txwstudio.app.whatthefit.data.entity.Category
+import com.txwstudio.app.whatthefit.data.entity.Tag
+import com.txwstudio.app.whatthefit.domain.model.TagKind
 import com.txwstudio.app.whatthefit.ui.components.CategoryChips
 import com.txwstudio.app.whatthefit.ui.components.SeasonChips
 import com.txwstudio.app.whatthefit.ui.components.TagChips
+import com.txwstudio.app.whatthefit.ui.theme.WTFTheme
 
-@OptIn(ExperimentalMaterial3Api::class)
+/**
+ * Stateful entry point. Owns the [ItemEditViewModel] and forwards its form state to [ItemEditContent].
+ * Not previewable: it builds a Hilt ViewModel that reads and writes Room. Preview [ItemEditContent].
+ */
 @Composable
 fun ItemEditScreen(
     onDone: () -> Unit,
@@ -46,6 +54,56 @@ fun ItemEditScreen(
     val brands by viewModel.brands.collectAsStateWithLifecycle()
     val colors by viewModel.colors.collectAsStateWithLifecycle()
     val occasions by viewModel.occasions.collectAsStateWithLifecycle()
+
+    ItemEditContent(
+        isEditMode = viewModel.isEditMode,
+        name = viewModel.name,
+        notes = viewModel.notes,
+        canSave = viewModel.canSave,
+        categories = categories,
+        brands = brands,
+        colors = colors,
+        occasions = occasions,
+        selectedCategoryIds = viewModel.selectedCategoryIds,
+        selectedTagIds = viewModel.selectedTagIds,
+        selectedSeasons = viewModel.selectedSeasons,
+        onNameChange = viewModel::onNameChange,
+        onNotesChange = viewModel::onNotesChange,
+        onToggleCategory = viewModel::toggleCategory,
+        onToggleTag = viewModel::toggleTag,
+        onToggleSeason = viewModel::toggleSeason,
+        onSave = { viewModel.save(onDone) },
+        onDelete = { viewModel.delete(onDone) },
+        onBack = onDone,
+        modifier = modifier,
+    )
+}
+
+/** Stateless body. Takes plain form state plus event callbacks, so it renders in @Preview without Hilt. */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ItemEditContent(
+    isEditMode: Boolean,
+    name: String,
+    notes: String,
+    canSave: Boolean,
+    categories: List<Category>,
+    brands: List<Tag>,
+    colors: List<Tag>,
+    occasions: List<Tag>,
+    selectedCategoryIds: Set<Long>,
+    selectedTagIds: Set<Long>,
+    selectedSeasons: Set<Int>,
+    onNameChange: (String) -> Unit,
+    onNotesChange: (String) -> Unit,
+    onToggleCategory: (Long) -> Unit,
+    onToggleTag: (Long) -> Unit,
+    onToggleSeason: (Int) -> Unit,
+    onSave: () -> Unit,
+    onDelete: () -> Unit,
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     var showDeleteConfirm by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -55,12 +113,12 @@ fun ItemEditScreen(
                 title = {
                     Text(
                         stringResource(
-                            if (viewModel.isEditMode) R.string.item_edit_title_edit else R.string.item_edit_title_add,
+                            if (isEditMode) R.string.item_edit_title_edit else R.string.item_edit_title_add,
                         ),
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = onDone) {
+                    IconButton(onClick = onBack) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(R.string.action_back),
@@ -68,7 +126,7 @@ fun ItemEditScreen(
                     }
                 },
                 actions = {
-                    if (viewModel.isEditMode) {
+                    if (isEditMode) {
                         IconButton(onClick = { showDeleteConfirm = true }) {
                             Icon(
                                 Icons.Default.Delete,
@@ -76,7 +134,7 @@ fun ItemEditScreen(
                             )
                         }
                     }
-                    TextButton(onClick = { viewModel.save(onDone) }, enabled = viewModel.canSave) {
+                    TextButton(onClick = onSave, enabled = canSave) {
                         Text(stringResource(R.string.action_save))
                     }
                 },
@@ -92,8 +150,8 @@ fun ItemEditScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             OutlinedTextField(
-                value = viewModel.name,
-                onValueChange = viewModel::onNameChange,
+                value = name,
+                onValueChange = onNameChange,
                 label = { Text(stringResource(R.string.item_field_name)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
@@ -109,35 +167,35 @@ fun ItemEditScreen(
             } else {
                 CategoryChips(
                     categories = categories,
-                    selectedIds = viewModel.selectedCategoryIds,
-                    onToggle = viewModel::toggleCategory,
+                    selectedIds = selectedCategoryIds,
+                    onToggle = onToggleCategory,
                 )
             }
 
             if (brands.isNotEmpty()) {
                 Text(stringResource(R.string.item_field_brand), style = MaterialTheme.typography.titleSmall)
-                TagChips(tags = brands, selectedIds = viewModel.selectedTagIds, onToggle = viewModel::toggleTag)
+                TagChips(tags = brands, selectedIds = selectedTagIds, onToggle = onToggleTag)
             }
 
             if (colors.isNotEmpty()) {
                 Text(stringResource(R.string.item_field_colors), style = MaterialTheme.typography.titleSmall)
-                TagChips(tags = colors, selectedIds = viewModel.selectedTagIds, onToggle = viewModel::toggleTag)
+                TagChips(tags = colors, selectedIds = selectedTagIds, onToggle = onToggleTag)
             }
 
             if (occasions.isNotEmpty()) {
                 Text(stringResource(R.string.item_field_occasions), style = MaterialTheme.typography.titleSmall)
-                TagChips(tags = occasions, selectedIds = viewModel.selectedTagIds, onToggle = viewModel::toggleTag)
+                TagChips(tags = occasions, selectedIds = selectedTagIds, onToggle = onToggleTag)
             }
 
             Text(stringResource(R.string.item_field_seasons), style = MaterialTheme.typography.titleSmall)
             SeasonChips(
-                selectedSeasons = viewModel.selectedSeasons,
-                onToggle = viewModel::toggleSeason,
+                selectedSeasons = selectedSeasons,
+                onToggle = onToggleSeason,
             )
 
             OutlinedTextField(
-                value = viewModel.notes,
-                onValueChange = viewModel::onNotesChange,
+                value = notes,
+                onValueChange = onNotesChange,
                 label = { Text(stringResource(R.string.item_field_notes)) },
                 minLines = 2,
                 modifier = Modifier.fillMaxWidth(),
@@ -152,7 +210,7 @@ fun ItemEditScreen(
             confirmButton = {
                 TextButton(onClick = {
                     showDeleteConfirm = false
-                    viewModel.delete(onDone)
+                    onDelete()
                 }) { Text(stringResource(R.string.action_delete)) }
             },
             dismissButton = {
@@ -160,6 +218,45 @@ fun ItemEditScreen(
                     Text(stringResource(R.string.action_cancel))
                 }
             },
+        )
+    }
+}
+
+private val sampleCategories = listOf(
+    Category(id = 1, name = "上衣"),
+    Category(id = 2, name = "外套"),
+)
+private val sampleBrands = listOf(Tag(id = 10, kind = TagKind.BRAND, name = "Uniqlo"))
+private val sampleColors = listOf(
+    Tag(id = 20, kind = TagKind.COLOR, name = "白", swatchArgb = 0xFFFFFFFFL),
+    Tag(id = 21, kind = TagKind.COLOR, name = "黑", swatchArgb = 0xFF000000L),
+)
+private val sampleOccasions = listOf(Tag(id = 30, kind = TagKind.OCCASION, name = "休閒"))
+
+@Preview(name = "Item edit", showBackground = true)
+@Composable
+private fun ItemEditContentPreview() {
+    WTFTheme(dynamicColor = false) {
+        ItemEditContent(
+            isEditMode = true,
+            name = "白色 T-Shirt",
+            notes = "",
+            canSave = true,
+            categories = sampleCategories,
+            brands = sampleBrands,
+            colors = sampleColors,
+            occasions = sampleOccasions,
+            selectedCategoryIds = setOf(1),
+            selectedTagIds = setOf(10, 20),
+            selectedSeasons = emptySet(),
+            onNameChange = {},
+            onNotesChange = {},
+            onToggleCategory = {},
+            onToggleTag = {},
+            onToggleSeason = {},
+            onSave = {},
+            onDelete = {},
+            onBack = {},
         )
     }
 }

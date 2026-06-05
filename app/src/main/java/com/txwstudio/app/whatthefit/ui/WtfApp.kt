@@ -40,6 +40,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -271,5 +272,21 @@ private fun WardrobeSearchBar(
                 Spacer(Modifier.width(4.dp))
             }
         }
+    }
+}
+
+@Preview(name = "Search bar — empty", showBackground = true)
+@Composable
+private fun WardrobeSearchBarEmptyPreview() {
+    WTFTheme(dynamicColor = false) {
+        WardrobeSearchBar(query = "", onQueryChange = {}, onOpenSettings = {})
+    }
+}
+
+@Preview(name = "Search bar — typing", showBackground = true)
+@Composable
+private fun WardrobeSearchBarTypingPreview() {
+    WTFTheme(dynamicColor = false) {
+        WardrobeSearchBar(query = "Uniqlo", onQueryChange = {}, onOpenSettings = {})
     }
 }

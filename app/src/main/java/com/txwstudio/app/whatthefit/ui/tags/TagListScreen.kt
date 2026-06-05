@@ -1,6 +1,5 @@
 package com.txwstudio.app.whatthefit.ui.tags
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -33,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -42,12 +42,18 @@ import com.txwstudio.app.whatthefit.data.entity.TagWithCount
 import com.txwstudio.app.whatthefit.domain.model.TagKind
 import com.txwstudio.app.whatthefit.ui.components.ColorSwatch
 import com.txwstudio.app.whatthefit.ui.components.FabListBottomPadding
+import com.txwstudio.app.whatthefit.ui.theme.WTFTheme
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
 /** Default swatch for a newly added color (a friendly blue) before the user picks one. */
 private const val DEFAULT_NEW_COLOR = 0xFF1E88E5L
 
+/**
+ * Stateful entry point. Owns the [TagListViewModel], scopes it per [kind], and forwards its state to
+ * [TagListContent]. Not previewable: it builds a Hilt ViewModel that reads Room. Preview
+ * [TagListContent].
+ */
 @Composable
 fun TagListScreen(
     kind: TagKind,
@@ -55,8 +61,33 @@ fun TagListScreen(
     viewModel: TagListViewModel = hiltViewModel(key = "tags_${kind.name}"),
 ) {
     LaunchedEffect(kind) { viewModel.setKind(kind) }
-
     val tags by viewModel.tags.collectAsStateWithLifecycle()
+    TagListContent(
+        kind = kind,
+        tags = tags,
+        onReorder = viewModel::reorder,
+        onAdd = { viewModel.add(it) },
+        onAddColor = { name, argb -> viewModel.add(name, argb) },
+        onUpdate = { tag, name -> viewModel.update(tag, name) },
+        onUpdateColor = { tag, name, argb -> viewModel.update(tag, name, argb) },
+        onDelete = viewModel::delete,
+        modifier = modifier,
+    )
+}
+
+/** Stateless body. Drag, dialogs and the local reorder copy are view state, so it previews fine. */
+@Composable
+fun TagListContent(
+    kind: TagKind,
+    tags: List<TagWithCount>,
+    onReorder: (List<Long>) -> Unit,
+    onAdd: (String) -> Unit,
+    onAddColor: (String, Long) -> Unit,
+    onUpdate: (Tag, String) -> Unit,
+    onUpdateColor: (Tag, String, Long) -> Unit,
+    onDelete: (Tag) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     var showAddDialog by remember { mutableStateOf(false) }
     var renameTarget by remember { mutableStateOf<Tag?>(null) }
     var deleteTarget by remember { mutableStateOf<Tag?>(null) }
@@ -91,7 +122,7 @@ fun TagListScreen(
                                     contentDescription = stringResource(R.string.category_drag_handle),
                                     modifier = Modifier
                                         .draggableHandle(
-                                            onDragStopped = { viewModel.reorder(localList.map { it.tag.id }) },
+                                            onDragStopped = { onReorder(localList.map { it.tag.id }) },
                                         )
                                         .padding(end = 4.dp),
                                 )
@@ -117,14 +148,14 @@ fun TagListScreen(
                 title = stringResource(R.string.tag_add_title),
                 initialName = "",
                 initialArgb = DEFAULT_NEW_COLOR,
-                onConfirm = { name, argb -> viewModel.add(name, argb); showAddDialog = false },
+                onConfirm = { name, argb -> onAddColor(name, argb); showAddDialog = false },
                 onDismiss = { showAddDialog = false },
             )
         } else {
             TextInputDialog(
                 title = stringResource(R.string.tag_add_title),
                 initial = "",
-                onConfirm = { viewModel.add(it); showAddDialog = false },
+                onConfirm = { onAdd(it); showAddDialog = false },
                 onDismiss = { showAddDialog = false },
             )
         }
@@ -135,14 +166,14 @@ fun TagListScreen(
                 title = stringResource(R.string.action_rename),
                 initialName = target.name,
                 initialArgb = target.swatchArgb ?: DEFAULT_NEW_COLOR,
-                onConfirm = { name, argb -> viewModel.update(target, name, argb); renameTarget = null },
+                onConfirm = { name, argb -> onUpdateColor(target, name, argb); renameTarget = null },
                 onDismiss = { renameTarget = null },
             )
         } else {
             TextInputDialog(
                 title = stringResource(R.string.action_rename),
                 initial = target.name,
-                onConfirm = { viewModel.update(target, it); renameTarget = null },
+                onConfirm = { onUpdate(target, it); renameTarget = null },
                 onDismiss = { renameTarget = null },
             )
         }
@@ -153,7 +184,7 @@ fun TagListScreen(
             title = { Text(stringResource(R.string.tag_delete_title, target.name)) },
             text = { Text(stringResource(R.string.category_delete_body)) },
             confirmButton = {
-                TextButton(onClick = { viewModel.delete(target); deleteTarget = null }) {
+                TextButton(onClick = { onDelete(target); deleteTarget = null }) {
                     Text(stringResource(R.string.action_delete))
                 }
             },
@@ -224,4 +255,50 @@ private fun TextInputDialog(
             TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
         },
     )
+}
+
+private val sampleBrands = listOf(
+    TagWithCount(Tag(id = 1, kind = TagKind.BRAND, name = "Uniqlo"), itemCount = 8),
+    TagWithCount(Tag(id = 2, kind = TagKind.BRAND, name = "Nike"), itemCount = 4),
+    TagWithCount(Tag(id = 3, kind = TagKind.BRAND, name = "Levi's"), itemCount = 2),
+)
+
+private val sampleColors = listOf(
+    TagWithCount(Tag(id = 4, kind = TagKind.COLOR, name = "黑", swatchArgb = 0xFF000000L), itemCount = 10),
+    TagWithCount(Tag(id = 5, kind = TagKind.COLOR, name = "白", swatchArgb = 0xFFFFFFFFL), itemCount = 6),
+    TagWithCount(Tag(id = 6, kind = TagKind.COLOR, name = "藍", swatchArgb = 0xFF1E88E5L), itemCount = 3),
+)
+
+@Preview(name = "Tags — brands", showBackground = true)
+@Composable
+private fun TagListBrandPreview() {
+    WTFTheme(dynamicColor = false) {
+        TagListContent(
+            kind = TagKind.BRAND,
+            tags = sampleBrands,
+            onReorder = {},
+            onAdd = {},
+            onAddColor = { _, _ -> },
+            onUpdate = { _, _ -> },
+            onUpdateColor = { _, _, _ -> },
+            onDelete = {},
+        )
+    }
+}
+
+@Preview(name = "Tags — colors", showBackground = true)
+@Composable
+private fun TagListColorPreview() {
+    WTFTheme(dynamicColor = false) {
+        TagListContent(
+            kind = TagKind.COLOR,
+            tags = sampleColors,
+            onReorder = {},
+            onAdd = {},
+            onAddColor = { _, _ -> },
+            onUpdate = { _, _ -> },
+            onUpdateColor = { _, _, _ -> },
+            onDelete = {},
+        )
+    }
 }

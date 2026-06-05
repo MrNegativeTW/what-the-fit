@@ -32,11 +32,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.txwstudio.app.whatthefit.R
 import com.txwstudio.app.whatthefit.domain.model.ThemeMode
+import com.txwstudio.app.whatthefit.ui.theme.WTFTheme
 
 private val THEME_OPTIONS = listOf(
     ThemeMode.SYSTEM to R.string.theme_system,
@@ -44,7 +46,11 @@ private val THEME_OPTIONS = listOf(
     ThemeMode.DARK to R.string.theme_dark,
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
+/**
+ * Stateful entry point. Owns the [SettingsViewModel] and resolves the system language intent, then
+ * forwards plain state to [SettingsContent]. Not previewable: it builds a Hilt ViewModel. Preview
+ * [SettingsContent].
+ */
 @Composable
 fun SettingsScreen(
     onBack: () -> Unit,
@@ -53,7 +59,27 @@ fun SettingsScreen(
 ) {
     val themeMode by viewModel.themeMode.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    SettingsContent(
+        themeMode = themeMode,
+        versionLabel = viewModel.versionLabel,
+        onBack = onBack,
+        onSelectTheme = viewModel::setThemeMode,
+        onOpenLanguageSettings = { openAppLanguageSettings(context) },
+        modifier = modifier,
+    )
+}
 
+/** Stateless body. Takes plain state plus event callbacks, so it renders in @Preview without Hilt. */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SettingsContent(
+    themeMode: ThemeMode,
+    versionLabel: String,
+    onBack: () -> Unit,
+    onSelectTheme: (ThemeMode) -> Unit,
+    onOpenLanguageSettings: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -86,7 +112,7 @@ fun SettingsScreen(
                 THEME_OPTIONS.forEachIndexed { index, (mode, labelRes) ->
                     SegmentedButton(
                         selected = themeMode == mode,
-                        onClick = { viewModel.setThemeMode(mode) },
+                        onClick = { onSelectTheme(mode) },
                         shape = SegmentedButtonDefaults.itemShape(index, THEME_OPTIONS.size),
                     ) {
                         Text(stringResource(labelRes))
@@ -102,7 +128,7 @@ fun SettingsScreen(
                 trailingContent = {
                     Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null)
                 },
-                modifier = Modifier.clickable { openAppLanguageSettings(context) },
+                modifier = Modifier.clickable { onOpenLanguageSettings() },
             )
 
             HorizontalDivider()
@@ -118,7 +144,7 @@ fun SettingsScreen(
                     modifier = Modifier.weight(1f),
                 )
                 Text(
-                    viewModel.versionLabel,
+                    versionLabel,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -141,5 +167,19 @@ private fun openAppLanguageSettings(context: Context) {
         runCatching {
             context.startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, uri))
         }
+    }
+}
+
+@Preview(name = "Settings", showBackground = true)
+@Composable
+private fun SettingsContentPreview() {
+    WTFTheme(dynamicColor = false) {
+        SettingsContent(
+            themeMode = ThemeMode.SYSTEM,
+            versionLabel = "1.0.0 (1)",
+            onBack = {},
+            onSelectTheme = {},
+            onOpenLanguageSettings = {},
+        )
     }
 }
