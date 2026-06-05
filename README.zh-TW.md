@@ -17,50 +17,50 @@ What The Fit?
 
 
 <p align="center">
-  <a href="#Preview">Preview</a> •
-  <a href="#features">Features</a> •
-  <a href="#license">License</a>
+  <a href="#預覽">預覽</a> •
+  <a href="#功能">功能</a> •
+  <a href="#授權">授權</a>
 </p>
 </div>
 
-## Preview
+## 預覽
 ![](https://fakeimg.pl/440x230/282828/eae0d0/?retina=1&text=Problem?)
 
-## Features
+## 功能
 
-- Random outfit from selected parts
-- Reroll all, or reroll one part only
-- Manage clothes, parts, brands, colors, and occasions
-- Fast search in wardrobe
-- Offline-first (all data stays on device)
+- 依照選擇的部位隨機產生穿搭
+- 可整套重抽，或只重抽單一部位
+- 可管理衣物、部位、品牌、顏色、場合
+- 支援衣櫃搜尋
+- 離線可用（資料只存在裝置）
 
-## Installation
+## 安裝
 
 TODO
 
-## Run Locally
+## 本機執行
 
-1. Clone the project
-2. Open it in Android Studio
-3. Build debug APK
+1. 下載專案
+2. 用 Android Studio 開啟
+3. 建置 Debug APK
 
 ```bash
 ./gradlew :app:assembleDebug
 ```
 
-4. Run on emulator/device
+4. 安裝到模擬器或裝置
 
 ```bash
 ./gradlew :app:installDebug
 ```
 
-## Contributing
+## 貢獻
 
-Contributions are always welcome!
+歡迎貢獻。
 
-See [contributing.md](contributing.md) for ways to get started.
+詳見 [contributing.md](contributing.md)。
 
-## License
+## 授權
 
 ```
 License Information Here
