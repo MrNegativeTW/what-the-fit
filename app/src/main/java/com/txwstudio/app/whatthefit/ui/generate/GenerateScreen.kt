@@ -5,19 +5,35 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddAPhoto
+import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.Casino
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FloatingActionButtonMenu
+import androidx.compose.material3.FloatingActionButtonMenuItem
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.ToggleFloatingActionButton
+import androidx.compose.material3.ToggleFloatingActionButtonDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,6 +52,7 @@ import com.txwstudio.app.whatthefit.ui.theme.WTFTheme
 @Composable
 fun GenerateScreen(
     onGenerate: (List<Long>) -> Unit,
+    onAddOotd: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: GenerateViewModel = hiltViewModel(),
 ) {
@@ -47,6 +64,7 @@ fun GenerateScreen(
         selectedIds = selectedIds,
         onToggle = viewModel::toggle,
         onGenerate = onGenerate,
+        onAddOotd = onAddOotd,
         modifier = modifier,
     )
 }
@@ -59,6 +77,7 @@ fun GenerateContent(
     selectedIds: Set<Long>,
     onToggle: (Long) -> Unit,
     onGenerate: (List<Long>) -> Unit,
+    onAddOotd: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     if (categories.isEmpty()) {
@@ -72,10 +91,10 @@ fun GenerateContent(
         return
     }
 
-    Column(modifier.fillMaxSize()) {
+    Box(modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
-                .weight(1f)
+                .fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp),
         ) {
@@ -93,18 +112,74 @@ fun GenerateContent(
                     )
                 }
             }
+            // Bottom clearance so the last chips can scroll clear of the floating FAB menu.
+            Spacer(Modifier.height(96.dp))
         }
-        Button(
+
+        GenerateFabMenu(
+            onRandomize = { onGenerate(categories.filter { it.id in selectedIds }.map { it.id }) },
+            onAddOotd = onAddOotd,
+            modifier = Modifier.align(Alignment.BottomEnd),
+        )
+    }
+}
+
+/**
+ * Medium FAB that expands into a menu. The toggle morphs the AI sparkle into a close mark; the menu
+ * offers the outfit generator and an OOTD entry point (stubbed until the records feature ships).
+ */
+@Composable
+private fun GenerateFabMenu(
+    onRandomize: () -> Unit,
+    onAddOotd: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    var expanded by rememberSaveable { mutableStateOf(false) }
+
+    FloatingActionButtonMenu(
+        modifier = modifier,
+        expanded = expanded,
+        button = {
+            ToggleFloatingActionButton(
+                checked = expanded,
+                onCheckedChange = { expanded = it },
+                containerSize = ToggleFloatingActionButtonDefaults.containerSize(),
+                containerCornerRadius = ToggleFloatingActionButtonDefaults.containerCornerRadiusMedium(),
+            ) {
+                val icon by remember {
+                    derivedStateOf {
+                        if (checkedProgress > 0.5f) Icons.Filled.Close else Icons.Filled.AutoAwesome
+                    }
+                }
+                Icon(
+                    painter = rememberVectorPainter(icon),
+                    contentDescription = stringResource(R.string.generate_fab_menu_toggle),
+                    modifier = with(ToggleFloatingActionButtonDefaults) {
+                        Modifier.animateIcon(
+                            checkedProgress = { checkedProgress },
+                            size = ToggleFloatingActionButtonDefaults.iconSize(),
+                        )
+                    },
+                )
+            }
+        },
+    ) {
+        FloatingActionButtonMenuItem(
             onClick = {
-                onGenerate(categories.filter { it.id in selectedIds }.map { it.id })
+                expanded = false
+                onRandomize()
             },
-            enabled = selectedIds.isNotEmpty(),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-        ) {
-            Text(stringResource(R.string.generate_action))
-        }
+            icon = { Icon(Icons.Filled.Casino, contentDescription = null) },
+            text = { Text(stringResource(R.string.generate_action)) },
+        )
+        FloatingActionButtonMenuItem(
+            onClick = {
+                expanded = false
+                onAddOotd()
+            },
+            icon = { Icon(Icons.Filled.AddAPhoto, contentDescription = null) },
+            text = { Text(stringResource(R.string.fab_add_ootd)) },
+        )
     }
 }
 
@@ -125,6 +200,7 @@ private fun GenerateContentPreview() {
             selectedIds = setOf(2, 4, 5),
             onToggle = {},
             onGenerate = {},
+            onAddOotd = {},
         )
     }
 }
@@ -138,6 +214,7 @@ private fun GenerateContentEmptyPreview() {
             selectedIds = emptySet(),
             onToggle = {},
             onGenerate = {},
+            onAddOotd = {},
         )
     }
 }

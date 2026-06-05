@@ -155,6 +155,8 @@ fun WtfApp(appViewModel: AppViewModel = hiltViewModel()) {
                 composable(WtfRoutes.HOME) {
                     GenerateScreen(
                         onGenerate = { ids -> navController.navigate(WtfRoutes.result(ids)) },
+                        // TODO: navigate to OOTD record creation once the records feature ships.
+                        onAddOotd = {},
                     )
                 }
                 composable(WtfRoutes.CLOTHES) {

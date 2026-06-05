@@ -19,7 +19,9 @@
     <!-- Generate -->
     <string name="generate_title">选择今天想搭配的部位</string>
     <string name="generate_empty">尚无部位。请先到「衣橱 › 部位」添加部位与衣物。</string>
-    <string name="generate_action">生成穿搭</string>
+    <string name="generate_fab_menu_toggle">生成选项</string>
+    <string name="generate_action">生成 OOTD</string>
+    <string name="fab_add_ootd">添加 OOTD</string>
 
     <!-- Result -->
     <string name="result_title">今日穿搭</string>
