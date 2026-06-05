@@ -58,7 +58,9 @@ fun ClothesScreen(
         // Swipe left/right within the content area to move between tabs.
         HorizontalPager(
             state = pagerState,
-            modifier = Modifier.fillMaxWidth().weight(1f),
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
         ) { page ->
             when (page) {
                 ITEMS_PAGE -> ItemListScreen(
@@ -66,6 +68,7 @@ fun ClothesScreen(
                     onEditItem = onEditItem,
                     viewModel = itemListViewModel,
                 )
+
                 1 -> CategoryScreen()
                 2 -> TagListScreen(kind = TagKind.BRAND)
                 3 -> TagListScreen(kind = TagKind.COLOR)

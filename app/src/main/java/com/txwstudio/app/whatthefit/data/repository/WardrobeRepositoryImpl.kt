@@ -50,7 +50,8 @@ class WardrobeRepositoryImpl @Inject constructor(
 
     override suspend fun deleteCategory(category: Category) = categoryDao.delete(category)
 
-    override suspend fun reorderCategories(orderedIds: List<Long>) = categoryDao.applyOrder(orderedIds)
+    override suspend fun reorderCategories(orderedIds: List<Long>) =
+        categoryDao.applyOrder(orderedIds)
 
     // --- Tags ---
 
@@ -61,7 +62,14 @@ class WardrobeRepositoryImpl @Inject constructor(
 
     override suspend fun addTag(kind: TagKind, name: String, swatchArgb: Long?): Long {
         val nextOrder = tagDao.getMaxSortOrder(kind) + 1
-        return tagDao.insert(Tag(kind = kind, name = name, sortOrder = nextOrder, swatchArgb = swatchArgb))
+        return tagDao.insert(
+            Tag(
+                kind = kind,
+                name = name,
+                sortOrder = nextOrder,
+                swatchArgb = swatchArgb
+            )
+        )
     }
 
     override suspend fun updateTag(tag: Tag) = tagDao.update(tag)
@@ -99,7 +107,7 @@ class WardrobeRepositoryImpl @Inject constructor(
             val placeholders = ids.joinToString(",") { "?" }
             sql.append(
                 " AND EXISTS (SELECT 1 FROM $table r " +
-                    "WHERE r.itemId = ClothingItem.id AND r.$column IN ($placeholders))",
+                        "WHERE r.itemId = ClothingItem.id AND r.$column IN ($placeholders))",
             )
             args.addAll(ids)
         }

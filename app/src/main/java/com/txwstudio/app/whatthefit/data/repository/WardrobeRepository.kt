@@ -37,6 +37,7 @@ interface WardrobeRepository {
         colorIds: List<Long>,
         occasionIds: List<Long>,
     ): PagingSource<Int, ItemWithDetails>
+
     fun observeItemCount(): Flow<Int>
     suspend fun getAvailableItems(categoryId: Long): List<ClothingItem>
     suspend fun getItemWithDetails(id: Long): ItemWithDetails?

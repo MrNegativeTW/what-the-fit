@@ -1,5 +1,8 @@
 package com.txwstudio.app.whatthefit.data
 
+import com.txwstudio.app.whatthefit.data.Season.ENTRIES
+
+
 /**
  * Season tags stored as a bit flag on [com.txwstudio.app.whatthefit.data.entity.ClothingItem.seasons].
  * Labels only in this version — seasons are displayed/edited but do not filter generation.

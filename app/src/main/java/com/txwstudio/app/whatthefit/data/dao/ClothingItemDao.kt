@@ -23,8 +23,8 @@ interface ClothingItemDao {
     @Transaction
     @Query(
         "SELECT * FROM ClothingItem WHERE " +
-            "name LIKE '%' || :query || '%' OR notes LIKE '%' || :query || '%' " +
-            "ORDER BY name ASC, id ASC",
+                "name LIKE '%' || :query || '%' OR notes LIKE '%' || :query || '%' " +
+                "ORDER BY name ASC, id ASC",
     )
     fun pagingSearch(query: String): PagingSource<Int, ItemWithDetails>
 
@@ -49,8 +49,8 @@ interface ClothingItemDao {
     /** Available (not in laundry) items linked to [categoryId] — the core generation pool. */
     @Query(
         "SELECT ci.* FROM ClothingItem ci " +
-            "INNER JOIN ItemCategoryCrossRef ref ON ci.id = ref.itemId " +
-            "WHERE ref.categoryId = :categoryId AND ci.isAvailable = 1",
+                "INNER JOIN ItemCategoryCrossRef ref ON ci.id = ref.itemId " +
+                "WHERE ref.categoryId = :categoryId AND ci.isAvailable = 1",
     )
     suspend fun getAvailableItemsByCategory(categoryId: Long): List<ClothingItem>
 

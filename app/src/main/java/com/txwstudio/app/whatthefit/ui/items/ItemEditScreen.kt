@@ -157,7 +157,10 @@ fun ItemEditContent(
                 modifier = Modifier.fillMaxWidth(),
             )
 
-            Text(stringResource(R.string.item_field_parts), style = MaterialTheme.typography.titleSmall)
+            Text(
+                stringResource(R.string.item_field_parts),
+                style = MaterialTheme.typography.titleSmall
+            )
             if (categories.isEmpty()) {
                 Text(
                     stringResource(R.string.item_no_parts_hint),
@@ -173,21 +176,33 @@ fun ItemEditContent(
             }
 
             if (brands.isNotEmpty()) {
-                Text(stringResource(R.string.item_field_brand), style = MaterialTheme.typography.titleSmall)
+                Text(
+                    stringResource(R.string.item_field_brand),
+                    style = MaterialTheme.typography.titleSmall
+                )
                 TagChips(tags = brands, selectedIds = selectedTagIds, onToggle = onToggleTag)
             }
 
             if (colors.isNotEmpty()) {
-                Text(stringResource(R.string.item_field_colors), style = MaterialTheme.typography.titleSmall)
+                Text(
+                    stringResource(R.string.item_field_colors),
+                    style = MaterialTheme.typography.titleSmall
+                )
                 TagChips(tags = colors, selectedIds = selectedTagIds, onToggle = onToggleTag)
             }
 
             if (occasions.isNotEmpty()) {
-                Text(stringResource(R.string.item_field_occasions), style = MaterialTheme.typography.titleSmall)
+                Text(
+                    stringResource(R.string.item_field_occasions),
+                    style = MaterialTheme.typography.titleSmall
+                )
                 TagChips(tags = occasions, selectedIds = selectedTagIds, onToggle = onToggleTag)
             }
 
-            Text(stringResource(R.string.item_field_seasons), style = MaterialTheme.typography.titleSmall)
+            Text(
+                stringResource(R.string.item_field_seasons),
+                style = MaterialTheme.typography.titleSmall
+            )
             SeasonChips(
                 selectedSeasons = selectedSeasons,
                 onToggle = onToggleSeason,

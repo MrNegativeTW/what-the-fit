@@ -55,7 +55,8 @@ private val PRESET_COLORS = listOf(
 )
 
 private fun hsvToArgb(h: Float, s: Float, v: Float): Long =
-    Color.hsv(h.coerceIn(0f, 360f), s.coerceIn(0f, 1f), v.coerceIn(0f, 1f)).toArgb().toLong() and 0xFFFFFFFFL
+    Color.hsv(h.coerceIn(0f, 360f), s.coerceIn(0f, 1f), v.coerceIn(0f, 1f)).toArgb()
+        .toLong() and 0xFFFFFFFFL
 
 private fun argbToHsv(argb: Long): FloatArray {
     val out = FloatArray(3)
@@ -95,6 +96,7 @@ fun ColorPickerDialog(
         hue = h; sat = s; value = v
         hexText = argbToHex(hsvToArgb(h, s, v))
     }
+
     fun setFromArgb(a: Long, updateHex: Boolean) {
         val hsv = argbToHsv(a)
         hue = hsv[0]; sat = hsv[1]; value = hsv[2]
@@ -122,10 +124,16 @@ fun ColorPickerDialog(
                     saturation = sat,
                     value = value,
                     onChange = { h, s -> setFromHsv(h, s, value) },
-                    modifier = Modifier.size(200.dp).align(Alignment.CenterHorizontally),
+                    modifier = Modifier
+                        .size(200.dp)
+                        .align(Alignment.CenterHorizontally),
                 )
 
-                Slider(value = value, onValueChange = { setFromHsv(hue, sat, it) }, valueRange = 0f..1f)
+                Slider(
+                    value = value,
+                    onValueChange = { setFromHsv(hue, sat, it) },
+                    valueRange = 0f..1f
+                )
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -206,9 +214,17 @@ private fun ColorWheel(
         Canvas(Modifier.fillMaxSize()) {
             val radius = size.minDimension / 2f
             val center = Offset(size.width / 2f, size.height / 2f)
-            drawCircle(brush = Brush.sweepGradient(hueColors, center), radius = radius, center = center)
             drawCircle(
-                brush = Brush.radialGradient(listOf(Color.White, Color.Transparent), center, radius),
+                brush = Brush.sweepGradient(hueColors, center),
+                radius = radius,
+                center = center
+            )
+            drawCircle(
+                brush = Brush.radialGradient(
+                    listOf(Color.White, Color.Transparent),
+                    center,
+                    radius
+                ),
                 radius = radius,
                 center = center,
             )
@@ -218,8 +234,18 @@ private fun ColorWheel(
             val rad = Math.toRadians(hue.toDouble())
             val tx = center.x + (cos(rad) * saturation * radius).toFloat()
             val ty = center.y + (sin(rad) * saturation * radius).toFloat()
-            drawCircle(Color.White, radius = 7.dp.toPx(), center = Offset(tx, ty), style = Stroke(3.dp.toPx()))
-            drawCircle(Color.Black, radius = 7.dp.toPx(), center = Offset(tx, ty), style = Stroke(1.dp.toPx()))
+            drawCircle(
+                Color.White,
+                radius = 7.dp.toPx(),
+                center = Offset(tx, ty),
+                style = Stroke(3.dp.toPx())
+            )
+            drawCircle(
+                Color.Black,
+                radius = 7.dp.toPx(),
+                center = Offset(tx, ty),
+                style = Stroke(1.dp.toPx())
+            )
         }
     }
 }

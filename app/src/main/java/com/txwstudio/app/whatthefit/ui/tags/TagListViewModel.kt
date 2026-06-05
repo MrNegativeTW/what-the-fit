@@ -47,7 +47,14 @@ class TagListViewModel @Inject constructor(
     fun update(tag: Tag, name: String, swatchArgb: Long? = tag.swatchArgb) {
         val trimmed = name.trim()
         if (trimmed.isEmpty()) return
-        viewModelScope.launch { repository.updateTag(tag.copy(name = trimmed, swatchArgb = swatchArgb)) }
+        viewModelScope.launch {
+            repository.updateTag(
+                tag.copy(
+                    name = trimmed,
+                    swatchArgb = swatchArgb
+                )
+            )
+        }
     }
 
     fun delete(tag: Tag) {

@@ -139,7 +139,13 @@ fun ItemListContent(
                 if (categories.isNotEmpty()) {
                     FilterChipMenu(
                         labelRes = R.string.item_field_parts,
-                        options = categories.map { FilterOption(it.id, it.name, swatchArgb = null) },
+                        options = categories.map {
+                            FilterOption(
+                                it.id,
+                                it.name,
+                                swatchArgb = null
+                            )
+                        },
                         selectedIds = selectedCategoryIds,
                         onToggle = onToggleCategory,
                     )
@@ -199,7 +205,9 @@ fun ItemListContent(
         }
         FloatingActionButton(
             onClick = onAddItem,
-            modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(16.dp),
         ) {
             Icon(Icons.Default.Add, contentDescription = stringResource(R.string.item_add))
         }
@@ -286,7 +294,8 @@ private fun ItemRow(
             } else {
                 item.categories.joinToString("、") { it.name }
             }
-            val brandText = item.tags.filter { it.kind == TagKind.BRAND }.joinToString(" / ") { it.name }
+            val brandText =
+                item.tags.filter { it.kind == TagKind.BRAND }.joinToString(" / ") { it.name }
             Text(
                 text = if (brandText.isNotBlank()) "$brandText · $categoryText" else categoryText,
                 style = MaterialTheme.typography.bodySmall,
@@ -316,9 +325,11 @@ private val sampleItems = listOf(
     ),
 )
 
-private val sampleCategories = listOf(Category(id = 1, name = "上衣"), Category(id = 2, name = "外套"))
+private val sampleCategories =
+    listOf(Category(id = 1, name = "上衣"), Category(id = 2, name = "外套"))
 private val sampleBrands = listOf(Tag(id = 10, kind = TagKind.BRAND, name = "Uniqlo"))
-private val sampleColors = listOf(Tag(id = 20, kind = TagKind.COLOR, name = "白", swatchArgb = 0xFFFFFFFFL))
+private val sampleColors =
+    listOf(Tag(id = 20, kind = TagKind.COLOR, name = "白", swatchArgb = 0xFFFFFFFFL))
 
 @Preview(name = "Item list", showBackground = true)
 @Composable

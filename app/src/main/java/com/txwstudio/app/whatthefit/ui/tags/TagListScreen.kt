@@ -103,7 +103,10 @@ fun TagListContent(
     Box(modifier.fillMaxSize()) {
         if (localList.isEmpty()) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(stringResource(R.string.tag_empty), color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(
+                    stringResource(R.string.tag_empty),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
         } else {
             LazyColumn(
@@ -136,7 +139,9 @@ fun TagListContent(
         }
         FloatingActionButton(
             onClick = { showAddDialog = true },
-            modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(16.dp),
         ) {
             Icon(Icons.Default.Add, contentDescription = stringResource(R.string.tag_add_title))
         }
@@ -166,7 +171,9 @@ fun TagListContent(
                 title = stringResource(R.string.action_rename),
                 initialName = target.name,
                 initialArgb = target.swatchArgb ?: DEFAULT_NEW_COLOR,
-                onConfirm = { name, argb -> onUpdateColor(target, name, argb); renameTarget = null },
+                onConfirm = { name, argb ->
+                    onUpdateColor(target, name, argb); renameTarget = null
+                },
                 onDismiss = { renameTarget = null },
             )
         } else {
@@ -209,7 +216,13 @@ private fun TagRow(
     ListItem(
         headlineContent = { Text(entry.tag.name) },
         supportingContent = {
-            Text(pluralStringResource(R.plurals.category_item_count, entry.itemCount, entry.itemCount))
+            Text(
+                pluralStringResource(
+                    R.plurals.category_item_count,
+                    entry.itemCount,
+                    entry.itemCount
+                )
+            )
         },
         leadingContent = {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -220,10 +233,16 @@ private fun TagRow(
         trailingContent = {
             Row {
                 IconButton(onClick = onRename) {
-                    Icon(Icons.Default.Edit, contentDescription = stringResource(R.string.action_rename))
+                    Icon(
+                        Icons.Default.Edit,
+                        contentDescription = stringResource(R.string.action_rename)
+                    )
                 }
                 IconButton(onClick = onDelete) {
-                    Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.action_delete))
+                    Icon(
+                        Icons.Default.Delete,
+                        contentDescription = stringResource(R.string.action_delete)
+                    )
                 }
             }
         },
@@ -264,9 +283,18 @@ private val sampleBrands = listOf(
 )
 
 private val sampleColors = listOf(
-    TagWithCount(Tag(id = 4, kind = TagKind.COLOR, name = "黑", swatchArgb = 0xFF000000L), itemCount = 10),
-    TagWithCount(Tag(id = 5, kind = TagKind.COLOR, name = "白", swatchArgb = 0xFFFFFFFFL), itemCount = 6),
-    TagWithCount(Tag(id = 6, kind = TagKind.COLOR, name = "藍", swatchArgb = 0xFF1E88E5L), itemCount = 3),
+    TagWithCount(
+        Tag(id = 4, kind = TagKind.COLOR, name = "黑", swatchArgb = 0xFF000000L),
+        itemCount = 10
+    ),
+    TagWithCount(
+        Tag(id = 5, kind = TagKind.COLOR, name = "白", swatchArgb = 0xFFFFFFFFL),
+        itemCount = 6
+    ),
+    TagWithCount(
+        Tag(id = 6, kind = TagKind.COLOR, name = "藍", swatchArgb = 0xFF1E88E5L),
+        itemCount = 3
+    ),
 )
 
 @Preview(name = "Tags — brands", showBackground = true)

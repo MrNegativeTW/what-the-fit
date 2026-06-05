@@ -17,8 +17,8 @@ interface CategoryDao {
 
     @Query(
         "SELECT c.*, COUNT(ref.itemId) AS itemCount FROM Category c " +
-            "LEFT JOIN ItemCategoryCrossRef ref ON c.id = ref.categoryId " +
-            "GROUP BY c.id ORDER BY c.sortOrder ASC, c.id ASC",
+                "LEFT JOIN ItemCategoryCrossRef ref ON c.id = ref.categoryId " +
+                "GROUP BY c.id ORDER BY c.sortOrder ASC, c.id ASC",
     )
     fun observeAllWithCounts(): Flow<List<CategoryWithCount>>
 

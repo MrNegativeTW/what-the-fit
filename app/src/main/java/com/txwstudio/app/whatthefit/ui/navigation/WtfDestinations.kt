@@ -14,7 +14,8 @@ object WtfRoutes {
 
     // result?categoryIds=1,2,3
     const val RESULT_PATTERN = "result?$ARG_CATEGORY_IDS={$ARG_CATEGORY_IDS}"
-    fun result(categoryIds: List<Long>) = "result?$ARG_CATEGORY_IDS=${categoryIds.joinToString(",")}"
+    fun result(categoryIds: List<Long>) =
+        "result?$ARG_CATEGORY_IDS=${categoryIds.joinToString(",")}"
 
     // item_edit?itemId=0  (0 = add mode)
     const val ITEM_EDIT_PATTERN = "item_edit?$ARG_ITEM_ID={$ARG_ITEM_ID}"

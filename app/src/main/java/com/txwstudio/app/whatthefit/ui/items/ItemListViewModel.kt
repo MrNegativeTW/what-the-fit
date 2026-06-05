@@ -64,7 +64,7 @@ class ItemListViewModel @Inject constructor(
         _selectedOccasionIds,
     ) { q, catIds, brandIds, colorIds, occIds ->
         q.isNotBlank() || catIds.isNotEmpty() || brandIds.isNotEmpty() ||
-            colorIds.isNotEmpty() || occIds.isNotEmpty()
+                colorIds.isNotEmpty() || occIds.isNotEmpty()
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
     val items: Flow<PagingData<ItemWithDetails>> = combine(
@@ -80,7 +80,13 @@ class ItemListViewModel @Inject constructor(
         .distinctUntilChanged()
         .flatMapLatest { c ->
             Pager(PagingConfig(pageSize = 30, enablePlaceholders = false)) {
-                repository.searchItems(c.query, c.categoryIds, c.brandIds, c.colorIds, c.occasionIds)
+                repository.searchItems(
+                    c.query,
+                    c.categoryIds,
+                    c.brandIds,
+                    c.colorIds,
+                    c.occasionIds
+                )
             }.flow
         }
         .cachedIn(viewModelScope)

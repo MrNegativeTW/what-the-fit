@@ -127,7 +127,9 @@ fun CategoryContent(
         }
         FloatingActionButton(
             onClick = { showAddDialog = true },
-            modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(16.dp),
         ) {
             Icon(Icons.Default.Add, contentDescription = stringResource(R.string.category_add))
         }
@@ -180,16 +182,28 @@ private fun CategoryListItem(
     ListItem(
         headlineContent = { Text(entry.category.name) },
         supportingContent = {
-            Text(pluralStringResource(R.plurals.category_item_count, entry.itemCount, entry.itemCount))
+            Text(
+                pluralStringResource(
+                    R.plurals.category_item_count,
+                    entry.itemCount,
+                    entry.itemCount
+                )
+            )
         },
         leadingContent = dragHandle,
         trailingContent = {
             Row {
                 IconButton(onClick = onRename) {
-                    Icon(Icons.Default.Edit, contentDescription = stringResource(R.string.action_rename))
+                    Icon(
+                        Icons.Default.Edit,
+                        contentDescription = stringResource(R.string.action_rename)
+                    )
                 }
                 IconButton(onClick = onDelete) {
-                    Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.action_delete))
+                    Icon(
+                        Icons.Default.Delete,
+                        contentDescription = stringResource(R.string.action_delete)
+                    )
                 }
             }
         },

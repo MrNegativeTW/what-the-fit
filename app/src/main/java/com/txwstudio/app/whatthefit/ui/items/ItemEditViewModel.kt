@@ -68,11 +68,25 @@ class ItemEditViewModel @Inject constructor(
 
     val canSave: Boolean get() = name.isNotBlank()
 
-    fun onNameChange(value: String) { name = value }
-    fun onNotesChange(value: String) { notes = value }
-    fun toggleCategory(id: Long) { selectedCategoryIds = selectedCategoryIds.toggled(id) }
-    fun toggleTag(id: Long) { selectedTagIds = selectedTagIds.toggled(id) }
-    fun toggleSeason(season: Int) { selectedSeasons = selectedSeasons.toggled(season) }
+    fun onNameChange(value: String) {
+        name = value
+    }
+
+    fun onNotesChange(value: String) {
+        notes = value
+    }
+
+    fun toggleCategory(id: Long) {
+        selectedCategoryIds = selectedCategoryIds.toggled(id)
+    }
+
+    fun toggleTag(id: Long) {
+        selectedTagIds = selectedTagIds.toggled(id)
+    }
+
+    fun toggleSeason(season: Int) {
+        selectedSeasons = selectedSeasons.toggled(season)
+    }
 
     fun save(onDone: () -> Unit) {
         if (name.isBlank()) return

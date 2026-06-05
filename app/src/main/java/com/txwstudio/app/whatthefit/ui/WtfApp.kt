@@ -117,9 +117,15 @@ fun WtfApp(appViewModel: AppViewModel = hiltViewModel()) {
                 AnimatedVisibility(
                     visible = topLevel,
                     enter = fadeIn(tween(ScreenTransitionMillis)) +
-                        expandVertically(tween(ScreenTransitionMillis), expandFrom = Alignment.Top),
+                            expandVertically(
+                                tween(ScreenTransitionMillis),
+                                expandFrom = Alignment.Top
+                            ),
                     exit = fadeOut(tween(ScreenTransitionMillis)) +
-                        shrinkVertically(tween(ScreenTransitionMillis), shrinkTowards = Alignment.Top),
+                            shrinkVertically(
+                                tween(ScreenTransitionMillis),
+                                shrinkTowards = Alignment.Top
+                            ),
                 ) {
                     WardrobeSearchBar(
                         query = query,
@@ -131,8 +137,16 @@ fun WtfApp(appViewModel: AppViewModel = hiltViewModel()) {
             bottomBar = {
                 AnimatedVisibility(
                     visible = topLevel,
-                    enter = fadeIn(tween(ScreenTransitionMillis)) + expandVertically(tween(ScreenTransitionMillis)),
-                    exit = fadeOut(tween(ScreenTransitionMillis)) + shrinkVertically(tween(ScreenTransitionMillis)),
+                    enter = fadeIn(tween(ScreenTransitionMillis)) + expandVertically(
+                        tween(
+                            ScreenTransitionMillis
+                        )
+                    ),
+                    exit = fadeOut(tween(ScreenTransitionMillis)) + shrinkVertically(
+                        tween(
+                            ScreenTransitionMillis
+                        )
+                    ),
                 ) {
                     NavigationBar {
                         TopLevelDestination.entries.forEach { dest ->
@@ -152,6 +166,7 @@ fun WtfApp(appViewModel: AppViewModel = hiltViewModel()) {
                                             painter = painterResource(R.drawable.outline_apparel_24),
                                             contentDescription = label,
                                         )
+
                                         TopLevelDestination.CLOTHES -> Icon(
                                             imageVector = Icons.Filled.Checkroom,
                                             contentDescription = label,

@@ -81,9 +81,11 @@ fun GenerateContent(
     modifier: Modifier = Modifier,
 ) {
     if (categories.isEmpty()) {
-        Box(modifier
-            .fillMaxSize()
-            .padding(32.dp), contentAlignment = Alignment.Center) {
+        Box(
+            modifier
+                .fillMaxSize()
+                .padding(32.dp), contentAlignment = Alignment.Center
+        ) {
             Text(
                 text = stringResource(R.string.generate_empty),
                 textAlign = TextAlign.Center,

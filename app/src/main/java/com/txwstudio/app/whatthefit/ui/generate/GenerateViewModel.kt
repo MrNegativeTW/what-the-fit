@@ -32,14 +32,16 @@ class GenerateViewModel @Inject constructor(
             val remembered = selectionPreferences.selectedIdsOrNull.first()
             _selectedIds.value = remembered ?: run {
                 // First launch: default to all categories once they have loaded.
-                val cats = withTimeoutOrNull(2_000) { categories.first { it.isNotEmpty() } }.orEmpty()
+                val cats =
+                    withTimeoutOrNull(2_000) { categories.first { it.isNotEmpty() } }.orEmpty()
                 cats.map { it.id }.toSet()
             }
         }
     }
 
     fun toggle(id: Long) {
-        val updated = if (id in _selectedIds.value) _selectedIds.value - id else _selectedIds.value + id
+        val updated =
+            if (id in _selectedIds.value) _selectedIds.value - id else _selectedIds.value + id
         _selectedIds.value = updated
         viewModelScope.launch { selectionPreferences.setSelectedIds(updated) }
     }

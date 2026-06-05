@@ -18,8 +18,8 @@ interface TagDao {
 
     @Query(
         "SELECT t.*, COUNT(ref.itemId) AS itemCount FROM Tag t " +
-            "LEFT JOIN ItemTagCrossRef ref ON t.id = ref.tagId " +
-            "WHERE t.kind = :kind GROUP BY t.id ORDER BY t.sortOrder ASC, t.id ASC",
+                "LEFT JOIN ItemTagCrossRef ref ON t.id = ref.tagId " +
+                "WHERE t.kind = :kind GROUP BY t.id ORDER BY t.sortOrder ASC, t.id ASC",
     )
     fun observeByKindWithCounts(kind: TagKind): Flow<List<TagWithCount>>
 
