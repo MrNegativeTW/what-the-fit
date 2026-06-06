@@ -161,4 +161,6 @@
     <string name="theme_dark">深色</string>
     <string name="settings_version">版本信息</string>
     <string name="settings_language">语言</string>
+    <string name="settings_rate">为我们评分</string>
+    <string name="settings_rate_desc">在 Google Play 上评分</string>
 </resources>

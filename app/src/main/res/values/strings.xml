@@ -162,4 +162,6 @@
     <string name="theme_dark">Dark</string>
     <string name="settings_version">Version</string>
     <string name="settings_language">Language</string>
+    <string name="settings_rate">Rate us</string>
+    <string name="settings_rate_desc">Rate this app on Google Play</string>
 </resources>
