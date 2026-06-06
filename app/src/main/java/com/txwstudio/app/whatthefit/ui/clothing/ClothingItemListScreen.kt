@@ -1,18 +1,15 @@
-package com.txwstudio.app.whatthefit.ui.items
+package com.txwstudio.app.whatthefit.ui.clothing
 
 import androidx.annotation.StringRes
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
@@ -51,22 +48,23 @@ import com.txwstudio.app.whatthefit.data.entity.ClothingItem
 import com.txwstudio.app.whatthefit.data.entity.ItemWithDetails
 import com.txwstudio.app.whatthefit.data.entity.Tag
 import com.txwstudio.app.whatthefit.domain.model.TagKind
+import com.txwstudio.app.whatthefit.ui.components.ClothingItemRow
 import com.txwstudio.app.whatthefit.ui.components.ColorSwatch
 import com.txwstudio.app.whatthefit.ui.components.FabListBottomPadding
 import com.txwstudio.app.whatthefit.ui.theme.WTFTheme
 import kotlinx.coroutines.flow.flowOf
 
 /**
- * Stateful entry point. Owns the [ItemListViewModel] and forwards its paged list and filter state to
- * [ItemListContent]. Not previewable: it builds a Hilt ViewModel that reads Room. Preview
- * [ItemListContent] with a fake [PagingData].
+ * Stateful entry point. Owns the [ClothingItemListViewModel] and forwards its paged list and filter
+ * state to [ClothingItemListContent]. Not previewable: it builds a Hilt ViewModel that reads Room.
+ * Preview [ClothingItemListContent] with a fake [PagingData].
  */
 @Composable
-fun ItemListScreen(
+fun ClothingItemListScreen(
     onAddItem: () -> Unit,
     onEditItem: (Long) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: ItemListViewModel = hiltViewModel(),
+    viewModel: ClothingItemListViewModel = hiltViewModel(),
 ) {
     val items = viewModel.items.collectAsLazyPagingItems()
     val filtering by viewModel.isFiltering.collectAsStateWithLifecycle()
@@ -82,7 +80,7 @@ fun ItemListScreen(
     val selectedOccasionIds by viewModel.selectedOccasionIds.collectAsStateWithLifecycle()
     val selectedFitIds by viewModel.selectedFitIds.collectAsStateWithLifecycle()
 
-    ItemListContent(
+    ClothingItemListContent(
         items = items,
         filtering = filtering,
         categories = categories,
@@ -109,7 +107,7 @@ fun ItemListScreen(
 
 /** Stateless body. Takes the paged list plus plain filter state, so it renders in @Preview. */
 @Composable
-fun ItemListContent(
+fun ClothingItemListContent(
     items: LazyPagingItems<ItemWithDetails>,
     filtering: Boolean,
     categories: List<Category>,
@@ -208,10 +206,15 @@ fun ItemListContent(
                 ) {
                     items(items.itemCount) { index ->
                         items[index]?.let { item ->
-                            ItemRow(
+                            ClothingItemRow(
                                 item = item,
                                 onClick = { onEditItem(item.item.id) },
-                                onToggleAvailable = { onToggleAvailable(item.item.id, it) },
+                                trailing = {
+                                    Switch(
+                                        checked = item.item.isAvailable,
+                                        onCheckedChange = { onToggleAvailable(item.item.id, it) },
+                                    )
+                                },
                             )
                             HorizontalDivider()
                         }
@@ -278,50 +281,6 @@ private fun FilterChipMenu(
     }
 }
 
-@Composable
-private fun ItemRow(
-    item: ItemWithDetails,
-    onClick: () -> Unit,
-    onToggleAvailable: (Boolean) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Column(Modifier.weight(1f)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(item.item.name, style = MaterialTheme.typography.bodyLarge)
-                val swatches = item.tags.mapNotNull { tag ->
-                    tag.swatchArgb.takeIf { tag.kind == TagKind.COLOR }
-                }
-                if (swatches.isNotEmpty()) {
-                    Spacer(Modifier.width(8.dp))
-                    Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                        swatches.forEach { ColorSwatch(argb = it, size = 12.dp) }
-                    }
-                }
-            }
-            val categoryText = if (item.categories.isEmpty()) {
-                stringResource(R.string.item_uncategorized)
-            } else {
-                item.categories.joinToString("、") { it.name }
-            }
-            val brandText =
-                item.tags.filter { it.kind == TagKind.BRAND }.joinToString(" / ") { it.name }
-            Text(
-                text = if (brandText.isNotBlank()) "$brandText · $categoryText" else categoryText,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-        Switch(checked = item.item.isAvailable, onCheckedChange = onToggleAvailable)
-    }
-}
-
 private val sampleItems = listOf(
     ItemWithDetails(
         item = ClothingItem(id = 1, name = "白色 T-Shirt"),
@@ -349,10 +308,10 @@ private val sampleColors =
 
 @Preview(name = "Item list", showBackground = true)
 @Composable
-private fun ItemListContentPreview() {
+private fun ClothingItemListContentPreview() {
     val items = flowOf(PagingData.from(sampleItems)).collectAsLazyPagingItems()
     WTFTheme(dynamicColor = false) {
-        ItemListContent(
+        ClothingItemListContent(
             items = items,
             filtering = false,
             categories = sampleCategories,

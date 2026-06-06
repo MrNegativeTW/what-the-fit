@@ -1,4 +1,4 @@
-package com.txwstudio.app.whatthefit.ui.items
+package com.txwstudio.app.whatthefit.ui.clothing
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
@@ -42,14 +42,14 @@ import com.txwstudio.app.whatthefit.ui.components.TagChips
 import com.txwstudio.app.whatthefit.ui.theme.WTFTheme
 
 /**
- * Stateful entry point. Owns the [ItemEditViewModel] and forwards its form state to [ItemEditContent].
- * Not previewable: it builds a Hilt ViewModel that reads and writes Room. Preview [ItemEditContent].
+ * Stateful entry point. Owns the [ClothingItemEditViewModel] and forwards its form state to [ClothingItemEditContent].
+ * Not previewable: it builds a Hilt ViewModel that reads and writes Room. Preview [ClothingItemEditContent].
  */
 @Composable
-fun ItemEditScreen(
+fun ClothingItemEditScreen(
     onDone: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: ItemEditViewModel = hiltViewModel(),
+    viewModel: ClothingItemEditViewModel = hiltViewModel(),
 ) {
     val categories by viewModel.categories.collectAsStateWithLifecycle()
     val brands by viewModel.brands.collectAsStateWithLifecycle()
@@ -57,7 +57,7 @@ fun ItemEditScreen(
     val occasions by viewModel.occasions.collectAsStateWithLifecycle()
     val fits by viewModel.fits.collectAsStateWithLifecycle()
 
-    ItemEditContent(
+    ClothingItemEditContent(
         isEditMode = viewModel.isEditMode,
         name = viewModel.name,
         notes = viewModel.notes,
@@ -86,7 +86,7 @@ fun ItemEditScreen(
 /** Stateless body. Takes plain form state plus event callbacks, so it renders in @Preview without Hilt. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ItemEditContent(
+fun ClothingItemEditContent(
     isEditMode: Boolean,
     name: String,
     notes: String,
@@ -286,9 +286,9 @@ private val sampleFits = listOf(Tag(id = 40, kind = TagKind.FIT, name = "寬鬆"
 
 @Preview(name = "Item edit", showBackground = true)
 @Composable
-private fun ItemEditContentPreview() {
+private fun ClothingItemEditContentPreview() {
     WTFTheme(dynamicColor = false) {
-        ItemEditContent(
+        ClothingItemEditContent(
             isEditMode = true,
             name = "白色 T-Shirt",
             notes = "",

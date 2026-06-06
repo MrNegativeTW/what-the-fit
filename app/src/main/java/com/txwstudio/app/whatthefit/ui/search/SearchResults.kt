@@ -2,7 +2,6 @@ package com.txwstudio.app.whatthefit.ui.search
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -32,10 +31,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.txwstudio.app.whatthefit.R
-import com.txwstudio.app.whatthefit.data.entity.ItemWithDetails
 import com.txwstudio.app.whatthefit.data.entity.OotdWithItems
-import com.txwstudio.app.whatthefit.domain.model.TagKind
-import com.txwstudio.app.whatthefit.ui.components.ColorSwatch
+import com.txwstudio.app.whatthefit.ui.components.ClothingItemRow
 import java.io.File
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -77,7 +74,7 @@ fun SearchResults(
         if (clothes.isNotEmpty()) {
             item { SectionHeader(stringResource(R.string.search_section_clothes)) }
             items(clothes, key = { "c${it.item.id}" }) { item ->
-                ClothesResultRow(item = item, onClick = { onOpenClothes(item.item.id) })
+                ClothingItemRow(item = item, onClick = { onOpenClothes(item.item.id) })
             }
         }
         if (ootds.isNotEmpty()) {
@@ -97,41 +94,6 @@ private fun SectionHeader(text: String) {
         color = MaterialTheme.colorScheme.primary,
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
     )
-}
-
-@Composable
-private fun ClothesResultRow(item: ItemWithDetails, onClick: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Column(Modifier.weight(1f)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(item.item.name, style = MaterialTheme.typography.bodyLarge)
-                val swatches = item.tags.mapNotNull { tag -> tag.swatchArgb.takeIf { tag.kind == TagKind.COLOR } }
-                if (swatches.isNotEmpty()) {
-                    Spacer(Modifier.width(8.dp))
-                    Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                        swatches.forEach { ColorSwatch(argb = it, size = 12.dp) }
-                    }
-                }
-            }
-            val categoryText = if (item.categories.isEmpty()) {
-                stringResource(R.string.item_uncategorized)
-            } else {
-                item.categories.joinToString("、") { it.name }
-            }
-            val brandText = item.tags.filter { it.kind == TagKind.BRAND }.joinToString(" / ") { it.name }
-            Text(
-                text = if (brandText.isNotBlank()) "$brandText · $categoryText" else categoryText,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-    }
 }
 
 @Composable

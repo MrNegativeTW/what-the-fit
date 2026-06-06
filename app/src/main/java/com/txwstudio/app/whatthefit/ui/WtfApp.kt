@@ -64,7 +64,7 @@ import com.txwstudio.app.whatthefit.R
 import com.txwstudio.app.whatthefit.domain.model.ThemeMode
 import com.txwstudio.app.whatthefit.ui.clothes.ClothesScreen
 import com.txwstudio.app.whatthefit.ui.generate.GenerateScreen
-import com.txwstudio.app.whatthefit.ui.items.ItemEditScreen
+import com.txwstudio.app.whatthefit.ui.clothing.ClothingItemEditScreen
 import com.txwstudio.app.whatthefit.ui.navigation.TopLevelDestination
 import com.txwstudio.app.whatthefit.ui.navigation.WtfRoutes
 import com.txwstudio.app.whatthefit.ui.ootd.OotdEditScreen
@@ -270,7 +270,7 @@ fun WtfApp(appViewModel: AppViewModel = hiltViewModel()) {
                         },
                     ),
                 ) {
-                    ItemEditScreen(onDone = { navController.popBackStack() })
+                    ClothingItemEditScreen(onDone = { navController.popBackStack() })
                 }
                 composable(
                     route = WtfRoutes.RESULT_PATTERN,

@@ -18,8 +18,8 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.txwstudio.app.whatthefit.R
 import com.txwstudio.app.whatthefit.domain.model.TagKind
 import com.txwstudio.app.whatthefit.ui.categories.CategoryScreen
-import com.txwstudio.app.whatthefit.ui.items.ItemListScreen
-import com.txwstudio.app.whatthefit.ui.items.ItemListViewModel
+import com.txwstudio.app.whatthefit.ui.clothing.ClothingItemListScreen
+import com.txwstudio.app.whatthefit.ui.clothing.ClothingItemListViewModel
 import com.txwstudio.app.whatthefit.ui.tags.TagListScreen
 import kotlinx.coroutines.launch
 
@@ -42,7 +42,7 @@ fun ClothesScreen(
     modifier: Modifier = Modifier,
     // App-scoped instance passed from WtfApp so the top-bar search field and this list/filter
     // share one source of truth. The default is only for previews.
-    itemListViewModel: ItemListViewModel = hiltViewModel(),
+    clothingItemListViewModel: ClothingItemListViewModel = hiltViewModel(),
 ) {
     val pagerState = rememberPagerState(pageCount = { TAB_LABELS.size })
     val scope = rememberCoroutineScope()
@@ -70,10 +70,10 @@ fun ClothesScreen(
                 .weight(1f),
         ) { page ->
             when (page) {
-                ITEMS_PAGE -> ItemListScreen(
+                ITEMS_PAGE -> ClothingItemListScreen(
                     onAddItem = onAddItem,
                     onEditItem = onEditItem,
-                    viewModel = itemListViewModel,
+                    viewModel = clothingItemListViewModel,
                 )
 
                 1 -> CategoryScreen()

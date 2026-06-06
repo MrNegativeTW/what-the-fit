@@ -1,4 +1,4 @@
-package com.txwstudio.app.whatthefit.ui.items
+package com.txwstudio.app.whatthefit.ui.clothing
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -30,7 +30,7 @@ import javax.inject.Inject
 
 @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 @HiltViewModel
-class ItemListViewModel @Inject constructor(
+class ClothingItemListViewModel @Inject constructor(
     private val repository: WardrobeRepository,
 ) : ViewModel() {
     private val _query = MutableStateFlow("")

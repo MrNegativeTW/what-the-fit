@@ -1,4 +1,4 @@
-package com.txwstudio.app.whatthefit.ui.items
+package com.txwstudio.app.whatthefit.ui.clothing
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ItemEditViewModel @Inject constructor(
+class ClothingItemEditViewModel @Inject constructor(
     private val repository: WardrobeRepository,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
