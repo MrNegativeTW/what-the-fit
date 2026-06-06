@@ -2,11 +2,8 @@ package com.txwstudio.app.whatthefit.ui.generate
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,7 +20,6 @@ import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Casino
 import androidx.compose.material.icons.filled.Checkroom
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButtonMenu
 import androidx.compose.material3.FloatingActionButtonMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -79,14 +75,11 @@ fun GenerateScreen(
     viewModel: GenerateViewModel = hiltViewModel(),
 ) {
     val categories by viewModel.categories.collectAsStateWithLifecycle()
-    val selectedIds by viewModel.selectedIds.collectAsStateWithLifecycle()
     val ootds by viewModel.ootds.collectAsStateWithLifecycle()
 
     GenerateContent(
         categories = categories,
-        selectedIds = selectedIds,
         ootds = ootds,
-        onToggle = viewModel::toggle,
         onGenerate = onGenerate,
         onAddOotd = onAddOotd,
         onOpenOotd = onOpenOotd,
@@ -95,13 +88,10 @@ fun GenerateScreen(
 }
 
 /** Stateless body. Takes plain state plus event callbacks, so it renders in @Preview without Hilt. */
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun GenerateContent(
     categories: List<Category>,
-    selectedIds: Set<Long>,
     ootds: List<OotdWithItems>,
-    onToggle: (Long) -> Unit,
     onGenerate: (List<Long>) -> Unit,
     onAddOotd: () -> Unit,
     onOpenOotd: (Long) -> Unit,
@@ -130,22 +120,6 @@ fun GenerateContent(
                 .padding(16.dp),
         ) {
             Text(
-                text = stringResource(R.string.generate_title),
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(bottom = 16.dp),
-            )
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                categories.forEach { category ->
-                    FilterChip(
-                        selected = category.id in selectedIds,
-                        onClick = { onToggle(category.id) },
-                        label = { Text(category.name) },
-                    )
-                }
-            }
-
-            Spacer(Modifier.height(24.dp))
-            Text(
                 text = stringResource(R.string.ootd_section_title),
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.padding(bottom = 8.dp),
@@ -168,7 +142,7 @@ fun GenerateContent(
         }
 
         GenerateFabMenu(
-            onRandomize = { onGenerate(categories.filter { it.id in selectedIds }.map { it.id }) },
+            onRandomize = { onGenerate(categories.map { it.id }) },
             onAddOotd = onAddOotd,
             modifier = Modifier.align(Alignment.BottomEnd),
         )
@@ -316,9 +290,7 @@ private fun GenerateContentPreview() {
     WTFTheme(dynamicColor = false) {
         GenerateContent(
             categories = sampleCategories,
-            selectedIds = setOf(2, 4, 5),
             ootds = sampleOotds,
-            onToggle = {},
             onGenerate = {},
             onAddOotd = {},
             onOpenOotd = {},
@@ -332,9 +304,7 @@ private fun GenerateContentEmptyPreview() {
     WTFTheme(dynamicColor = false) {
         GenerateContent(
             categories = emptyList(),
-            selectedIds = emptySet(),
             ootds = emptyList(),
-            onToggle = {},
             onGenerate = {},
             onAddOotd = {},
             onOpenOotd = {},

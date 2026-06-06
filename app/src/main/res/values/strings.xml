@@ -17,7 +17,6 @@
     <string name="nav_wardrobe">Wardrobe</string>
 
     <!-- Generate -->
-    <string name="generate_title">Pick the parts to style today</string>
     <string name="generate_empty">No parts yet. Add parts and clothes under Wardrobe › Parts first.</string>
     <string name="generate_fab_menu_toggle">Generate options</string>
     <string name="generate_action">Generate OOTD</string>
