@@ -1,5 +1,6 @@
 package com.txwstudio.app.whatthefit.ui.clothes
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -45,6 +46,11 @@ fun ClothesScreen(
 ) {
     val pagerState = rememberPagerState(pageCount = { TAB_LABELS.size })
     val scope = rememberCoroutineScope()
+
+    // From a sub-tab (Parts/Fit/Brands/...), back first returns to the Clothes tab before leaving Wardrobe.
+    BackHandler(enabled = pagerState.currentPage != ITEMS_PAGE) {
+        scope.launch { pagerState.animateScrollToPage(ITEMS_PAGE) }
+    }
 
     Column(modifier.fillMaxSize()) {
         PrimaryScrollableTabRow(selectedTabIndex = pagerState.currentPage) {

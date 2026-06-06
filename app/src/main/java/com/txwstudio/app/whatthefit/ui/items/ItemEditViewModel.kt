@@ -52,6 +52,15 @@ class ItemEditViewModel @Inject constructor(
     var isAvailable by mutableStateOf(true)
         private set
 
+    private var savedSnapshot = snapshot()
+
+    /** True once the form differs from its loaded state (for add mode, its initial empty state). */
+    val isDirty: Boolean get() = snapshot() != savedSnapshot
+
+    private fun snapshot() = FormSnapshot(
+        name, notes, selectedCategoryIds, selectedTagIds, selectedSeasons, isAvailable,
+    )
+
     init {
         if (isEditMode) {
             viewModelScope.launch {
@@ -63,6 +72,7 @@ class ItemEditViewModel @Inject constructor(
                     notes = item.notes
                     selectedCategoryIds = details.categories.map { it.id }.toSet()
                     selectedTagIds = details.tags.map { it.id }.toSet()
+                    savedSnapshot = snapshot()
                 }
             }
         }
@@ -118,3 +128,12 @@ class ItemEditViewModel @Inject constructor(
 }
 
 private fun <T> Set<T>.toggled(value: T): Set<T> = if (value in this) this - value else this + value
+
+private data class FormSnapshot(
+    val name: String,
+    val notes: String,
+    val categoryIds: Set<Long>,
+    val tagIds: Set<Long>,
+    val seasons: Set<Int>,
+    val available: Boolean,
+)

@@ -1,6 +1,8 @@
 package com.txwstudio.app.whatthefit.ui
 
 import android.app.Activity
+import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
@@ -43,6 +45,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -108,6 +111,20 @@ fun WtfApp(appViewModel: AppViewModel = hiltViewModel()) {
         val currentRoute = backStackEntry?.destination?.route
         // Top-level destinations share the persistent chrome: bottom nav + the app-wide search bar.
         val topLevel = currentRoute == WtfRoutes.HOME || currentRoute == WtfRoutes.CLOTHES
+
+        // On the home/OOTD screen, back once shows a hint and a second back within 2s exits the app.
+        val context = LocalContext.current
+        var lastBackAt by remember { mutableStateOf(0L) }
+        BackHandler(enabled = currentRoute == WtfRoutes.HOME) {
+            val now = System.currentTimeMillis()
+            if (now - lastBackAt < 2_000L) {
+                (context as? Activity)?.finish()
+            } else {
+                lastBackAt = now
+                Toast.makeText(context, context.getString(R.string.exit_press_again), Toast.LENGTH_SHORT)
+                    .show()
+            }
+        }
 
         // App-scoped so the search field and the Clothes list/filters are one instance.
         val searchViewModel: ItemListViewModel = hiltViewModel()

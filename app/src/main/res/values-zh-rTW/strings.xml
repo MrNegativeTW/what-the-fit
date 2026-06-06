@@ -11,6 +11,11 @@
     <string name="action_rename">重新命名</string>
     <string name="action_settings">設定</string>
     <string name="action_search_clear">清除搜尋</string>
+    <string name="action_leave">離開</string>
+
+    <!-- Exit confirmation -->
+    <string name="dialog_exit_title">捨棄並離開？</string>
+    <string name="exit_press_again">再按一次返回以退出</string>
 
     <!-- Bottom navigation -->
     <string name="nav_home">OOTD</string>
@@ -46,6 +51,7 @@
     <string name="result_no_item">無可用衣物</string>
     <string name="result_reroll_all">全部重骰</string>
     <string name="result_reroll_one">重骰 %1$s</string>
+    <string name="result_reroll_confirm_title">全部重骰？</string>
 
     <!-- Clothes tabs -->
     <string name="clothes_tab_items">衣物</string>

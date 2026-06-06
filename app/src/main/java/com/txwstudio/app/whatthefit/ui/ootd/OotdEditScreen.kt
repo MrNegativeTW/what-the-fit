@@ -1,5 +1,6 @@
 package com.txwstudio.app.whatthefit.ui.ootd
 
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -91,6 +92,7 @@ fun OotdEditScreen(
 
     OotdEditContent(
         isEditMode = viewModel.isEditMode,
+        isDirty = viewModel.isDirty,
         date = viewModel.date,
         categories = categories,
         itemsByCategory = viewModel.itemsByCategory,
@@ -120,6 +122,7 @@ fun OotdEditScreen(
 @Composable
 fun OotdEditContent(
     isEditMode: Boolean,
+    isDirty: Boolean,
     date: LocalDate,
     categories: List<Category>,
     itemsByCategory: Map<Long, List<ClothingItem>>,
@@ -140,7 +143,11 @@ fun OotdEditContent(
 ) {
     var showDeleteConfirm by remember { mutableStateOf(false) }
     var showDatePicker by remember { mutableStateOf(false) }
+    var showExitConfirm by remember { mutableStateOf(false) }
     val canSave = selectedItems.isNotEmpty()
+    val attemptExit = { if (isDirty) showExitConfirm = true else onBack() }
+
+    BackHandler { attemptExit() }
 
     Scaffold(
         modifier = modifier,
@@ -154,7 +161,7 @@ fun OotdEditContent(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(onClick = attemptExit) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(R.string.action_back),
@@ -288,6 +295,21 @@ fun OotdEditContent(
             },
         )
     }
+
+    if (showExitConfirm) {
+        AlertDialog(
+            onDismissRequest = { showExitConfirm = false },
+            title = { Text(stringResource(R.string.dialog_exit_title)) },
+            confirmButton = {
+                TextButton(onClick = { showExitConfirm = false; onBack() }) {
+                    Text(stringResource(R.string.action_leave))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showExitConfirm = false }) { Text(stringResource(R.string.action_cancel)) }
+            },
+        )
+    }
 }
 
 /** One part row with a dropdown to pick (or clear) the item worn for that category. */
@@ -358,6 +380,7 @@ private fun OotdEditContentPreview() {
     WTFTheme(dynamicColor = false) {
         OotdEditContent(
             isEditMode = true,
+            isDirty = false,
             date = LocalDate.ofEpochDay(20_000),
             categories = sampleCategories,
             itemsByCategory = sampleItemsByCategory,

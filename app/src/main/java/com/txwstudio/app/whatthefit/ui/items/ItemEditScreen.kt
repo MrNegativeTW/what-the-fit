@@ -1,5 +1,6 @@
 package com.txwstudio.app.whatthefit.ui.items
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -61,6 +62,7 @@ fun ItemEditScreen(
         name = viewModel.name,
         notes = viewModel.notes,
         canSave = viewModel.canSave,
+        isDirty = viewModel.isDirty,
         categories = categories,
         brands = brands,
         colors = colors,
@@ -89,6 +91,7 @@ fun ItemEditContent(
     name: String,
     notes: String,
     canSave: Boolean,
+    isDirty: Boolean,
     categories: List<Category>,
     brands: List<Tag>,
     colors: List<Tag>,
@@ -108,6 +111,10 @@ fun ItemEditContent(
     modifier: Modifier = Modifier,
 ) {
     var showDeleteConfirm by remember { mutableStateOf(false) }
+    var showExitConfirm by remember { mutableStateOf(false) }
+    val attemptExit = { if (isDirty) showExitConfirm = true else onBack() }
+
+    BackHandler { attemptExit() }
 
     Scaffold(
         modifier = modifier,
@@ -121,7 +128,7 @@ fun ItemEditContent(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(onClick = attemptExit) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(R.string.action_back),
@@ -246,6 +253,23 @@ fun ItemEditContent(
             },
         )
     }
+
+    if (showExitConfirm) {
+        AlertDialog(
+            onDismissRequest = { showExitConfirm = false },
+            title = { Text(stringResource(R.string.dialog_exit_title)) },
+            confirmButton = {
+                TextButton(onClick = { showExitConfirm = false; onBack() }) {
+                    Text(stringResource(R.string.action_leave))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showExitConfirm = false }) {
+                    Text(stringResource(R.string.action_cancel))
+                }
+            },
+        )
+    }
 }
 
 private val sampleCategories = listOf(
@@ -269,6 +293,7 @@ private fun ItemEditContentPreview() {
             name = "白色 T-Shirt",
             notes = "",
             canSave = true,
+            isDirty = false,
             categories = sampleCategories,
             brands = sampleBrands,
             colors = sampleColors,

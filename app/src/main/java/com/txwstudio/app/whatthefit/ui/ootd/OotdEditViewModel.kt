@@ -54,6 +54,13 @@ class OotdEditViewModel @Inject constructor(
     // Internal file the camera is about to write to; promoted to [photoPath] on a successful capture.
     private var pendingCameraPath: String? = null
 
+    private var savedSnapshot = snapshot()
+
+    /** True once the form differs from its loaded state (for add mode, its initial empty state). */
+    val isDirty: Boolean get() = snapshot() != savedSnapshot
+
+    private fun snapshot() = OotdSnapshot(epochDay, selectedItems, notes, photoPath)
+
     init {
         viewModelScope.launch {
             categories.collect { cats ->
@@ -71,6 +78,7 @@ class OotdEditViewModel @Inject constructor(
                         val itemId = slot.item?.id ?: return@mapNotNull null
                         categoryId to itemId
                     }.toMap()
+                    savedSnapshot = snapshot()
                 }
             }
         }
@@ -130,3 +138,10 @@ class OotdEditViewModel @Inject constructor(
         }
     }
 }
+
+private data class OotdSnapshot(
+    val epochDay: Long,
+    val selectedItems: Map<Long, Long>,
+    val notes: String,
+    val photoPath: String?,
+)
