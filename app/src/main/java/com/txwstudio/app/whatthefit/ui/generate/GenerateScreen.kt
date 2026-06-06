@@ -1,24 +1,32 @@
 package com.txwstudio.app.whatthefit.ui.generate
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddAPhoto
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Casino
+import androidx.compose.material.icons.filled.Checkroom
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButtonMenu
 import androidx.compose.material3.FloatingActionButtonMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -33,16 +41,29 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.AsyncImage
 import com.txwstudio.app.whatthefit.R
 import com.txwstudio.app.whatthefit.data.entity.Category
+import com.txwstudio.app.whatthefit.data.entity.ClothingItem
+import com.txwstudio.app.whatthefit.data.entity.OotdItemCrossRef
+import com.txwstudio.app.whatthefit.data.entity.OotdRecord
+import com.txwstudio.app.whatthefit.data.entity.OotdSlot
+import com.txwstudio.app.whatthefit.data.entity.OotdWithItems
 import com.txwstudio.app.whatthefit.ui.theme.WTFTheme
+import java.io.File
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 
 /**
  * Stateful entry point. Owns the [GenerateViewModel], collects its state, and forwards everything to
@@ -53,18 +74,22 @@ import com.txwstudio.app.whatthefit.ui.theme.WTFTheme
 fun GenerateScreen(
     onGenerate: (List<Long>) -> Unit,
     onAddOotd: () -> Unit,
+    onOpenOotd: (Long) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: GenerateViewModel = hiltViewModel(),
 ) {
     val categories by viewModel.categories.collectAsStateWithLifecycle()
     val selectedIds by viewModel.selectedIds.collectAsStateWithLifecycle()
+    val ootds by viewModel.ootds.collectAsStateWithLifecycle()
 
     GenerateContent(
         categories = categories,
         selectedIds = selectedIds,
+        ootds = ootds,
         onToggle = viewModel::toggle,
         onGenerate = onGenerate,
         onAddOotd = onAddOotd,
+        onOpenOotd = onOpenOotd,
         modifier = modifier,
     )
 }
@@ -75,9 +100,11 @@ fun GenerateScreen(
 fun GenerateContent(
     categories: List<Category>,
     selectedIds: Set<Long>,
+    ootds: List<OotdWithItems>,
     onToggle: (Long) -> Unit,
     onGenerate: (List<Long>) -> Unit,
     onAddOotd: () -> Unit,
+    onOpenOotd: (Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     if (categories.isEmpty()) {
@@ -116,7 +143,27 @@ fun GenerateContent(
                     )
                 }
             }
-            // Bottom clearance so the last chips can scroll clear of the floating FAB menu.
+
+            Spacer(Modifier.height(24.dp))
+            Text(
+                text = stringResource(R.string.ootd_section_title),
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(bottom = 8.dp),
+            )
+            if (ootds.isEmpty()) {
+                Text(
+                    text = stringResource(R.string.ootd_empty),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            } else {
+                ootds.forEach { ootd ->
+                    OotdHistoryRow(ootd = ootd, onClick = { onOpenOotd(ootd.record.id) })
+                    HorizontalDivider()
+                }
+            }
+
+            // Bottom clearance so content can scroll clear of the floating FAB menu.
             Spacer(Modifier.height(96.dp))
         }
 
@@ -187,12 +234,80 @@ private fun GenerateFabMenu(
     }
 }
 
+/** One row in the Outfit-page OOTD history: photo thumbnail, date, and a summary of items. */
+@Composable
+private fun OotdHistoryRow(
+    ootd: OotdWithItems,
+    onClick: () -> Unit,
+) {
+    val dateLabel = remember(ootd.record.epochDay) {
+        LocalDate.ofEpochDay(ootd.record.epochDay)
+            .format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))
+    }
+    val summary = ootd.slots.mapNotNull { it.item?.name }.joinToString("、")
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(
+            modifier = Modifier
+                .size(56.dp)
+                .clip(MaterialTheme.shapes.small)
+                .background(MaterialTheme.colorScheme.surfaceContainerHighest),
+            contentAlignment = Alignment.Center,
+        ) {
+            val photo = ootd.record.photoPath
+            if (photo != null) {
+                AsyncImage(
+                    model = File(photo),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize(),
+                )
+            } else {
+                Icon(
+                    Icons.Default.Checkroom,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+        Spacer(Modifier.width(12.dp))
+        Column(Modifier.weight(1f)) {
+            Text(dateLabel, style = MaterialTheme.typography.titleSmall)
+            if (summary.isNotEmpty()) {
+                Text(
+                    text = summary,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+        }
+    }
+}
+
 private val sampleCategories = listOf(
     Category(id = 1, name = "帽子"),
     Category(id = 2, name = "上衣"),
     Category(id = 3, name = "外套"),
     Category(id = 4, name = "褲子"),
     Category(id = 5, name = "鞋子"),
+)
+
+private val sampleOotds = listOf(
+    OotdWithItems(
+        record = OotdRecord(id = 1, epochDay = 20000),
+        slots = listOf(
+            OotdSlot(OotdItemCrossRef(1, 2, 10), Category(2, "上衣"), ClothingItem(10, "白色 T-Shirt")),
+            OotdSlot(OotdItemCrossRef(1, 4, 12), Category(4, "褲子"), ClothingItem(12, "黑色長褲")),
+        ),
+    ),
 )
 
 @Preview(name = "Generate — selection", showBackground = true)
@@ -202,9 +317,11 @@ private fun GenerateContentPreview() {
         GenerateContent(
             categories = sampleCategories,
             selectedIds = setOf(2, 4, 5),
+            ootds = sampleOotds,
             onToggle = {},
             onGenerate = {},
             onAddOotd = {},
+            onOpenOotd = {},
         )
     }
 }
@@ -216,9 +333,11 @@ private fun GenerateContentEmptyPreview() {
         GenerateContent(
             categories = emptyList(),
             selectedIds = emptySet(),
+            ootds = emptyList(),
             onToggle = {},
             onGenerate = {},
             onAddOotd = {},
+            onOpenOotd = {},
         )
     }
 }

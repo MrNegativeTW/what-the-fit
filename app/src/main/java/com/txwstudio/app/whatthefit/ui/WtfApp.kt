@@ -65,6 +65,7 @@ import com.txwstudio.app.whatthefit.ui.items.ItemEditScreen
 import com.txwstudio.app.whatthefit.ui.items.ItemListViewModel
 import com.txwstudio.app.whatthefit.ui.navigation.TopLevelDestination
 import com.txwstudio.app.whatthefit.ui.navigation.WtfRoutes
+import com.txwstudio.app.whatthefit.ui.ootd.OotdEditScreen
 import com.txwstudio.app.whatthefit.ui.result.ResultScreen
 import com.txwstudio.app.whatthefit.ui.settings.SettingsScreen
 import com.txwstudio.app.whatthefit.ui.theme.WTFTheme
@@ -197,8 +198,8 @@ fun WtfApp(appViewModel: AppViewModel = hiltViewModel()) {
                 composable(WtfRoutes.HOME) {
                     GenerateScreen(
                         onGenerate = { ids -> navController.navigate(WtfRoutes.result(ids)) },
-                        // TODO: navigate to OOTD record creation once the records feature ships.
-                        onAddOotd = {},
+                        onAddOotd = { navController.navigate(WtfRoutes.ootdEdit()) },
+                        onOpenOotd = { id -> navController.navigate(WtfRoutes.ootdEdit(id)) },
                     )
                 }
                 composable(WtfRoutes.CLOTHES) {
@@ -232,6 +233,17 @@ fun WtfApp(appViewModel: AppViewModel = hiltViewModel()) {
                 }
                 composable(WtfRoutes.SETTINGS) {
                     SettingsScreen(onBack = { navController.popBackStack() })
+                }
+                composable(
+                    route = WtfRoutes.OOTD_EDIT_PATTERN,
+                    arguments = listOf(
+                        navArgument(WtfRoutes.ARG_OOTD_ID) {
+                            type = NavType.LongType
+                            defaultValue = 0L
+                        },
+                    ),
+                ) {
+                    OotdEditScreen(onDone = { navController.popBackStack() })
                 }
             }
         }

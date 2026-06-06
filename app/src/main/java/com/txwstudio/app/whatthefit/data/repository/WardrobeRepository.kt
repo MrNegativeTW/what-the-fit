@@ -5,6 +5,8 @@ import com.txwstudio.app.whatthefit.data.entity.Category
 import com.txwstudio.app.whatthefit.data.entity.CategoryWithCount
 import com.txwstudio.app.whatthefit.data.entity.ClothingItem
 import com.txwstudio.app.whatthefit.data.entity.ItemWithDetails
+import com.txwstudio.app.whatthefit.data.entity.OotdRecord
+import com.txwstudio.app.whatthefit.data.entity.OotdWithItems
 import com.txwstudio.app.whatthefit.data.entity.Tag
 import com.txwstudio.app.whatthefit.data.entity.TagWithCount
 import com.txwstudio.app.whatthefit.domain.model.TagKind
@@ -45,4 +47,22 @@ interface WardrobeRepository {
     suspend fun saveItem(item: ClothingItem, categoryIds: List<Long>, tagIds: List<Long>): Long
     suspend fun deleteItem(item: ClothingItem)
     suspend fun setAvailability(id: Long, available: Boolean)
+
+    // OOTD records
+    fun observeOotds(): Flow<List<OotdWithItems>>
+    suspend fun getOotd(id: Long): OotdWithItems?
+
+    /**
+     * Insert (id == 0) or update an OOTD record and rebuild its item links atomically.
+     * Each entry in [slots] is categoryId to itemId. Returns the record's id.
+     */
+    suspend fun saveOotd(
+        id: Long,
+        epochDay: Long,
+        notes: String,
+        photoPath: String?,
+        slots: List<Pair<Long, Long>>,
+    ): Long
+
+    suspend fun deleteOotd(record: OotdRecord)
 }

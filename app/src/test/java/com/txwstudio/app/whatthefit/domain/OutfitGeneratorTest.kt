@@ -52,6 +52,16 @@ class OutfitGeneratorTest {
             error("unused")
         override suspend fun deleteItem(item: ClothingItem) = error("unused")
         override suspend fun setAvailability(id: Long, available: Boolean) = error("unused")
+        override fun observeOotds() = error("unused")
+        override suspend fun getOotd(id: Long) = error("unused")
+        override suspend fun saveOotd(
+            id: Long,
+            epochDay: Long,
+            notes: String,
+            photoPath: String?,
+            slots: List<Pair<Long, Long>>,
+        ): Long = error("unused")
+        override suspend fun deleteOotd(record: com.txwstudio.app.whatthefit.data.entity.OotdRecord) = error("unused")
     }
 
     private fun cat(id: Long) = Category(id = id, name = "C$id", sortOrder = id.toInt())

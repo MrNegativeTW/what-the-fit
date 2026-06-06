@@ -9,12 +9,15 @@ import com.txwstudio.app.whatthefit.R
 import com.txwstudio.app.whatthefit.data.dao.CategoryDao
 import com.txwstudio.app.whatthefit.data.dao.ClothingItemDao
 import com.txwstudio.app.whatthefit.data.dao.CrossRefDao
+import com.txwstudio.app.whatthefit.data.dao.OotdDao
 import com.txwstudio.app.whatthefit.data.dao.TagCrossRefDao
 import com.txwstudio.app.whatthefit.data.dao.TagDao
 import com.txwstudio.app.whatthefit.data.entity.Category
 import com.txwstudio.app.whatthefit.data.entity.ClothingItem
 import com.txwstudio.app.whatthefit.data.entity.ItemCategoryCrossRef
 import com.txwstudio.app.whatthefit.data.entity.ItemTagCrossRef
+import com.txwstudio.app.whatthefit.data.entity.OotdItemCrossRef
+import com.txwstudio.app.whatthefit.data.entity.OotdRecord
 import com.txwstudio.app.whatthefit.data.entity.Tag
 
 @Database(
@@ -24,6 +27,8 @@ import com.txwstudio.app.whatthefit.data.entity.Tag
         ItemCategoryCrossRef::class,
         Tag::class,
         ItemTagCrossRef::class,
+        OotdRecord::class,
+        OotdItemCrossRef::class,
     ],
     version = 1,
     exportSchema = true,
@@ -35,6 +40,7 @@ abstract class WtfDatabase : RoomDatabase() {
     abstract fun crossRefDao(): CrossRefDao
     abstract fun tagDao(): TagDao
     abstract fun tagCrossRefDao(): TagCrossRefDao
+    abstract fun ootdDao(): OotdDao
 
     companion object {
         const val NAME = "wtf.db"

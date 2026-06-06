@@ -13,7 +13,7 @@
     <string name="action_search_clear">清除搜尋</string>
 
     <!-- Bottom navigation -->
-    <string name="nav_home">穿搭</string>
+    <string name="nav_home">OOTD</string>
     <string name="nav_wardrobe">衣櫥</string>
 
     <!-- Generate -->
@@ -22,6 +22,25 @@
     <string name="generate_fab_menu_toggle">產生選項</string>
     <string name="generate_action">產生 OOTD</string>
     <string name="fab_add_ootd">新增 OOTD</string>
+
+    <!-- OOTD records -->
+    <string name="ootd_section_title">穿搭紀錄</string>
+    <string name="ootd_empty">尚無穿搭紀錄，點擊「新增 OOTD」開始。</string>
+    <string name="ootd_edit_title_add">新增 OOTD</string>
+    <string name="ootd_edit_title_edit">編輯 OOTD</string>
+    <string name="ootd_field_date">日期</string>
+    <string name="ootd_field_items">單品</string>
+    <string name="ootd_field_notes">備註</string>
+    <string name="ootd_field_photo">照片</string>
+    <string name="ootd_pick_item">選擇單品</string>
+    <string name="ootd_item_clear">清除</string>
+    <string name="ootd_add_photo">新增照片</string>
+    <string name="ootd_photo_gallery">相簿</string>
+    <string name="ootd_photo_camera">相機</string>
+    <string name="ootd_photo_remove">移除照片</string>
+    <string name="ootd_save_as">儲存為 OOTD</string>
+    <string name="ootd_saved">已儲存至穿搭紀錄</string>
+    <string name="ootd_delete_confirm_title">刪除此 OOTD？</string>
 
     <!-- Result -->
     <string name="result_title">今日穿搭</string>

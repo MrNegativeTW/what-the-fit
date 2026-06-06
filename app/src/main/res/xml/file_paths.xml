@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- Camera capture writes into filesDir/ootd via a FileProvider content Uri. -->
+    <files-path
+        name="ootd"
+        path="ootd/" />
+</paths>

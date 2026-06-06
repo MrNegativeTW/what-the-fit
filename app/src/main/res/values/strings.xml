@@ -13,7 +13,7 @@
     <string name="action_search_clear">Clear search</string>
 
     <!-- Bottom navigation -->
-    <string name="nav_home">Outfit</string>
+    <string name="nav_home">OOTD</string>
     <string name="nav_wardrobe">Wardrobe</string>
 
     <!-- Generate -->
@@ -22,6 +22,25 @@
     <string name="generate_fab_menu_toggle">Generate options</string>
     <string name="generate_action">Generate OOTD</string>
     <string name="fab_add_ootd">Add OOTD</string>
+
+    <!-- OOTD records -->
+    <string name="ootd_section_title">Your OOTDs</string>
+    <string name="ootd_empty">No outfits logged yet. Tap Add OOTD to start.</string>
+    <string name="ootd_edit_title_add">New OOTD</string>
+    <string name="ootd_edit_title_edit">Edit OOTD</string>
+    <string name="ootd_field_date">Date</string>
+    <string name="ootd_field_items">Items</string>
+    <string name="ootd_field_notes">Notes</string>
+    <string name="ootd_field_photo">Photo</string>
+    <string name="ootd_pick_item">Pick an item</string>
+    <string name="ootd_item_clear">Clear</string>
+    <string name="ootd_add_photo">Add photo</string>
+    <string name="ootd_photo_gallery">Gallery</string>
+    <string name="ootd_photo_camera">Camera</string>
+    <string name="ootd_photo_remove">Remove photo</string>
+    <string name="ootd_save_as">Save as OOTD</string>
+    <string name="ootd_saved">Saved to OOTD</string>
+    <string name="ootd_delete_confirm_title">Delete this OOTD?</string>
 
     <!-- Result -->
     <string name="result_title">Today\'s Outfit</string>

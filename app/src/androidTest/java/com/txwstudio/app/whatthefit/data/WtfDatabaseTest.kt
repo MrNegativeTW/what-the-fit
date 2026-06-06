@@ -224,7 +224,8 @@ class WtfDatabaseTest {
 
     @Test
     fun searchItems_facetedFilterAcrossDimensions() = runTest {
-        val repo = WardrobeRepositoryImpl(db, categoryDao, itemDao, crossRefDao, tagDao, tagCrossRefDao)
+        val repo =
+            WardrobeRepositoryImpl(db, categoryDao, itemDao, crossRefDao, tagDao, tagCrossRefDao, db.ootdDao())
 
         val tops = categoryDao.insert(Category(name = "Tops"))
         val pants = categoryDao.insert(Category(name = "Pants"))

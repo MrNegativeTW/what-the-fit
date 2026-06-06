@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.txwstudio.app.whatthefit.data.dao.CategoryDao
 import com.txwstudio.app.whatthefit.data.dao.ClothingItemDao
 import com.txwstudio.app.whatthefit.data.dao.CrossRefDao
+import com.txwstudio.app.whatthefit.data.dao.OotdDao
 import com.txwstudio.app.whatthefit.data.dao.TagCrossRefDao
 import com.txwstudio.app.whatthefit.data.dao.TagDao
 import com.txwstudio.app.whatthefit.data.db.WtfDatabase
@@ -39,4 +40,7 @@ object DatabaseModule {
 
     @Provides
     fun provideTagCrossRefDao(db: WtfDatabase): TagCrossRefDao = db.tagCrossRefDao()
+
+    @Provides
+    fun provideOotdDao(db: WtfDatabase): OotdDao = db.ootdDao()
 }

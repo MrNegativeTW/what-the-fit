@@ -3,6 +3,7 @@ package com.txwstudio.app.whatthefit.ui.generate
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.txwstudio.app.whatthefit.data.entity.Category
+import com.txwstudio.app.whatthefit.data.entity.OotdWithItems
 import com.txwstudio.app.whatthefit.data.prefs.SelectionPreferences
 import com.txwstudio.app.whatthefit.data.repository.WardrobeRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,6 +23,10 @@ class GenerateViewModel @Inject constructor(
     private val selectionPreferences: SelectionPreferences,
 ) : ViewModel() {
     val categories: StateFlow<List<Category>> = repository.observeCategories()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    /** Past OOTD records shown on the Outfit page, newest first. */
+    val ootds: StateFlow<List<OotdWithItems>> = repository.observeOotds()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     private val _selectedIds = MutableStateFlow<Set<Long>>(emptySet())

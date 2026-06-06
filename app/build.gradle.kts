@@ -81,6 +81,9 @@ dependencies {
     // Drag-and-drop reordering for the category list
     implementation(libs.reorderable)
 
+    // Image loading for OOTD photos
+    implementation(libs.coil.compose)
+
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.androidx.paging.testing)

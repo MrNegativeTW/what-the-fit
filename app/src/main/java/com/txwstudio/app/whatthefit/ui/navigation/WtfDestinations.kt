@@ -11,6 +11,7 @@ object WtfRoutes {
 
     const val ARG_CATEGORY_IDS = "categoryIds"
     const val ARG_ITEM_ID = "itemId"
+    const val ARG_OOTD_ID = "ootdId"
 
     // result?categoryIds=1,2,3
     const val RESULT_PATTERN = "result?$ARG_CATEGORY_IDS={$ARG_CATEGORY_IDS}"
@@ -20,6 +21,10 @@ object WtfRoutes {
     // item_edit?itemId=0  (0 = add mode)
     const val ITEM_EDIT_PATTERN = "item_edit?$ARG_ITEM_ID={$ARG_ITEM_ID}"
     fun itemEdit(itemId: Long = 0L) = "item_edit?$ARG_ITEM_ID=$itemId"
+
+    // ootd_edit?ootdId=0  (0 = add mode)
+    const val OOTD_EDIT_PATTERN = "ootd_edit?$ARG_OOTD_ID={$ARG_OOTD_ID}"
+    fun ootdEdit(ootdId: Long = 0L) = "ootd_edit?$ARG_OOTD_ID=$ootdId"
 }
 
 /** Top-level destinations shown in the bottom navigation bar. */

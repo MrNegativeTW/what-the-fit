@@ -6,6 +6,7 @@ import androidx.sqlite.db.SimpleSQLiteQuery
 import com.txwstudio.app.whatthefit.data.dao.CategoryDao
 import com.txwstudio.app.whatthefit.data.dao.ClothingItemDao
 import com.txwstudio.app.whatthefit.data.dao.CrossRefDao
+import com.txwstudio.app.whatthefit.data.dao.OotdDao
 import com.txwstudio.app.whatthefit.data.dao.TagCrossRefDao
 import com.txwstudio.app.whatthefit.data.dao.TagDao
 import com.txwstudio.app.whatthefit.data.db.WtfDatabase
@@ -13,6 +14,8 @@ import com.txwstudio.app.whatthefit.data.entity.Category
 import com.txwstudio.app.whatthefit.data.entity.CategoryWithCount
 import com.txwstudio.app.whatthefit.data.entity.ClothingItem
 import com.txwstudio.app.whatthefit.data.entity.ItemWithDetails
+import com.txwstudio.app.whatthefit.data.entity.OotdRecord
+import com.txwstudio.app.whatthefit.data.entity.OotdWithItems
 import com.txwstudio.app.whatthefit.data.entity.Tag
 import com.txwstudio.app.whatthefit.data.entity.TagWithCount
 import com.txwstudio.app.whatthefit.domain.model.TagKind
@@ -28,6 +31,7 @@ class WardrobeRepositoryImpl @Inject constructor(
     private val crossRefDao: CrossRefDao,
     private val tagDao: TagDao,
     private val tagCrossRefDao: TagCrossRefDao,
+    private val ootdDao: OotdDao,
 ) : WardrobeRepository {
     // --- Categories ---
 
@@ -157,4 +161,28 @@ class WardrobeRepositoryImpl @Inject constructor(
 
     override suspend fun setAvailability(id: Long, available: Boolean) =
         itemDao.setAvailable(id, available)
+
+    // --- OOTD records ---
+
+    override fun observeOotds(): Flow<List<OotdWithItems>> = ootdDao.observeAll()
+
+    override suspend fun getOotd(id: Long): OotdWithItems? = ootdDao.getById(id)
+
+    override suspend fun saveOotd(
+        id: Long,
+        epochDay: Long,
+        notes: String,
+        photoPath: String?,
+        slots: List<Pair<Long, Long>>,
+    ): Long = db.withTransaction {
+        val record = OotdRecord(id = id, epochDay = epochDay, notes = notes, photoPath = photoPath)
+        val recordId = if (id == 0L) ootdDao.insert(record) else {
+            ootdDao.update(record)
+            id
+        }
+        ootdDao.setSlots(recordId, slots)
+        recordId
+    }
+
+    override suspend fun deleteOotd(record: OotdRecord) = ootdDao.delete(record)
 }
