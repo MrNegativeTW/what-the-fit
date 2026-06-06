@@ -4,52 +4,52 @@ import android.app.Activity
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.input.clearText
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Checkroom
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.ExpandedFullScreenContainedSearchBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
+import androidx.compose.material3.SearchBar
+import androidx.compose.material3.SearchBarDefaults
+import androidx.compose.material3.SearchBarValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberContainedSearchBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -65,16 +65,15 @@ import com.txwstudio.app.whatthefit.domain.model.ThemeMode
 import com.txwstudio.app.whatthefit.ui.clothes.ClothesScreen
 import com.txwstudio.app.whatthefit.ui.generate.GenerateScreen
 import com.txwstudio.app.whatthefit.ui.items.ItemEditScreen
-import com.txwstudio.app.whatthefit.ui.items.ItemListViewModel
 import com.txwstudio.app.whatthefit.ui.navigation.TopLevelDestination
 import com.txwstudio.app.whatthefit.ui.navigation.WtfRoutes
 import com.txwstudio.app.whatthefit.ui.ootd.OotdEditScreen
 import com.txwstudio.app.whatthefit.ui.result.ResultScreen
+import com.txwstudio.app.whatthefit.ui.search.SearchResults
+import com.txwstudio.app.whatthefit.ui.search.SearchViewModel
 import com.txwstudio.app.whatthefit.ui.settings.SettingsScreen
 import com.txwstudio.app.whatthefit.ui.theme.WTFTheme
-
-/** Search-field height matching Google's apps (Contacts/Drive) — sleeker than M3's 56dp default. */
-private val SearchBarHeight = 48.dp
+import kotlinx.coroutines.launch
 
 /**
  * Shared duration for screen transitions. The app chrome, the search bar and bottom navigation,
@@ -83,6 +82,7 @@ private val SearchBarHeight = 48.dp
  */
 private const val ScreenTransitionMillis = 300
 
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun WtfApp(appViewModel: AppViewModel = hiltViewModel()) {
     val themeMode by appViewModel.themeMode.collectAsStateWithLifecycle()
@@ -126,45 +126,81 @@ fun WtfApp(appViewModel: AppViewModel = hiltViewModel()) {
             }
         }
 
-        // App-scoped so the search field and the Clothes list/filters are one instance.
-        val searchViewModel: ItemListViewModel = hiltViewModel()
-        val query by searchViewModel.query.collectAsStateWithLifecycle()
+        // Dedicated search: tapping the bar expands into a full-screen Contained search over clothes
+        // and OOTD history; the bar's avatar still opens Settings while collapsed.
+        val searchViewModel: SearchViewModel = hiltViewModel()
+        val searchState = rememberContainedSearchBarState()
+        val textFieldState = rememberTextFieldState()
+        val scope = rememberCoroutineScope()
+        LaunchedEffect(textFieldState) {
+            snapshotFlow { textFieldState.text.toString() }.collect(searchViewModel::onQueryChange)
+        }
+        val searchExpanded = searchState.targetValue == SearchBarValue.Expanded
+        val inputField: @Composable () -> Unit = {
+            SearchBarDefaults.InputField(
+                textFieldState = textFieldState,
+                searchBarState = searchState,
+                onSearch = {},
+                placeholder = { Text(stringResource(R.string.search_hint)) },
+                leadingIcon = {
+                    if (searchExpanded) {
+                        IconButton(onClick = { scope.launch { searchState.animateToCollapsed() } }) {
+                            Icon(
+                                Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = stringResource(R.string.action_back),
+                            )
+                        }
+                    } else {
+                        Icon(Icons.Default.Search, contentDescription = null)
+                    }
+                },
+                trailingIcon = {
+                    if (searchExpanded) {
+                        if (textFieldState.text.isNotEmpty()) {
+                            IconButton(onClick = { textFieldState.clearText() }) {
+                                Icon(
+                                    Icons.Default.Close,
+                                    contentDescription = stringResource(R.string.action_search_clear),
+                                )
+                            }
+                        }
+                    } else {
+                        IconButton(onClick = { navController.navigate(WtfRoutes.SETTINGS) }) {
+                            Icon(
+                                Icons.Default.Settings,
+                                contentDescription = stringResource(R.string.action_settings),
+                            )
+                        }
+                    }
+                },
+            )
+        }
 
         Scaffold(
             topBar = {
                 AnimatedVisibility(
                     visible = topLevel,
                     enter = fadeIn(tween(ScreenTransitionMillis)) +
-                            expandVertically(
-                                tween(ScreenTransitionMillis),
-                                expandFrom = Alignment.Top
-                            ),
+                            expandVertically(tween(ScreenTransitionMillis), expandFrom = Alignment.Top),
                     exit = fadeOut(tween(ScreenTransitionMillis)) +
-                            shrinkVertically(
-                                tween(ScreenTransitionMillis),
-                                shrinkTowards = Alignment.Top
-                            ),
+                            shrinkVertically(tween(ScreenTransitionMillis), shrinkTowards = Alignment.Top),
                 ) {
-                    WardrobeSearchBar(
-                        query = query,
-                        onQueryChange = searchViewModel::onQueryChange,
-                        onOpenSettings = { navController.navigate(WtfRoutes.SETTINGS) },
+                    SearchBar(
+                        state = searchState,
+                        inputField = inputField,
+                        colors = SearchBarDefaults.containedColors(searchState),
+                        modifier = Modifier
+                            .statusBarsPadding()
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 8.dp),
                     )
                 }
             },
             bottomBar = {
                 AnimatedVisibility(
                     visible = topLevel,
-                    enter = fadeIn(tween(ScreenTransitionMillis)) + expandVertically(
-                        tween(
-                            ScreenTransitionMillis
-                        )
-                    ),
-                    exit = fadeOut(tween(ScreenTransitionMillis)) + shrinkVertically(
-                        tween(
-                            ScreenTransitionMillis
-                        )
-                    ),
+                    enter = fadeIn(tween(ScreenTransitionMillis)) + expandVertically(tween(ScreenTransitionMillis)),
+                    exit = fadeOut(tween(ScreenTransitionMillis)) + shrinkVertically(tween(ScreenTransitionMillis)),
                 ) {
                     NavigationBar {
                         TopLevelDestination.entries.forEach { dest ->
@@ -223,7 +259,6 @@ fun WtfApp(appViewModel: AppViewModel = hiltViewModel()) {
                     ClothesScreen(
                         onAddItem = { navController.navigate(WtfRoutes.itemEdit(0L)) },
                         onEditItem = { id -> navController.navigate(WtfRoutes.itemEdit(id)) },
-                        itemListViewModel = searchViewModel,
                     )
                 }
                 composable(
@@ -264,102 +299,23 @@ fun WtfApp(appViewModel: AppViewModel = hiltViewModel()) {
                 }
             }
         }
-    }
-}
 
-/**
- * App-wide search bar shown on the top-level destinations. A 48dp pill (Google-Contacts feel) with
- * the search icon leading and the settings avatar trailing (it morphs to a clear ✕ while typing).
- * Per M3 Expressive, the side margin animates from 24dp at rest to 12dp when focused. Typing filters
- * the clothes list (visible on the Wardrobe tab).
- */
-@Composable
-private fun WardrobeSearchBar(
-    query: String,
-    onQueryChange: (String) -> Unit,
-    onOpenSettings: () -> Unit,
-) {
-    var focused by remember { mutableStateOf(false) }
-    val sideMargin by animateDpAsState(
-        targetValue = if (focused) 12.dp else 24.dp,
-        label = "searchBarMargin",
-    )
-
-    Box(
-        Modifier
-            .fillMaxWidth()
-            .statusBarsPadding()
-            .padding(horizontal = sideMargin, vertical = 8.dp),
-    ) {
-        Surface(
-            shape = CircleShape,
-            color = MaterialTheme.colorScheme.surfaceContainerHigh,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(SearchBarHeight),
+        // Full-screen Contained search overlay; shows only while the search bar is expanded.
+        ExpandedFullScreenContainedSearchBar(
+            state = searchState,
+            inputField = inputField,
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Spacer(Modifier.width(16.dp))
-                Icon(
-                    Icons.Default.Search,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                Spacer(Modifier.width(12.dp))
-                Box(Modifier.weight(1f), contentAlignment = Alignment.CenterStart) {
-                    if (query.isEmpty()) {
-                        Text(
-                            text = stringResource(R.string.item_search_hint),
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                    BasicTextField(
-                        value = query,
-                        onValueChange = onQueryChange,
-                        singleLine = true,
-                        textStyle = MaterialTheme.typography.bodyLarge.copy(
-                            color = MaterialTheme.colorScheme.onSurface,
-                        ),
-                        cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .onFocusChanged { focused = it.isFocused },
-                    )
-                }
-                if (query.isNotEmpty()) {
-                    IconButton(onClick = { onQueryChange("") }) {
-                        Icon(
-                            Icons.Default.Close,
-                            contentDescription = stringResource(R.string.action_search_clear),
-                        )
-                    }
-                } else {
-                    IconButton(onClick = onOpenSettings) {
-                        Icon(
-                            Icons.Default.Settings,
-                            contentDescription = stringResource(R.string.action_settings),
-                        )
-                    }
-                }
-                Spacer(Modifier.width(4.dp))
-            }
+            SearchResults(
+                viewModel = searchViewModel,
+                onOpenClothes = { id ->
+                    scope.launch { searchState.animateToCollapsed() }
+                    navController.navigate(WtfRoutes.itemEdit(id))
+                },
+                onOpenOotd = { id ->
+                    scope.launch { searchState.animateToCollapsed() }
+                    navController.navigate(WtfRoutes.ootdEdit(id))
+                },
+            )
         }
-    }
-}
-
-@Preview(name = "Search bar — empty", showBackground = true)
-@Composable
-private fun WardrobeSearchBarEmptyPreview() {
-    WTFTheme(dynamicColor = false) {
-        WardrobeSearchBar(query = "", onQueryChange = {}, onOpenSettings = {})
-    }
-}
-
-@Preview(name = "Search bar — typing", showBackground = true)
-@Composable
-private fun WardrobeSearchBarTypingPreview() {
-    WTFTheme(dynamicColor = false) {
-        WardrobeSearchBar(query = "Uniqlo", onQueryChange = {}, onOpenSettings = {})
     }
 }

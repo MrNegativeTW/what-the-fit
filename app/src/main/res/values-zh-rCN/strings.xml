@@ -66,6 +66,12 @@
     <string name="tag_add_title">添加</string>
     <string name="tag_delete_title">删除「%1$s」？</string>
 
+    <!-- Search -->
+    <string name="search_hint">搜索衣物与穿搭</string>
+    <string name="search_section_clothes">衣物</string>
+    <string name="search_section_ootds">穿搭</string>
+    <string name="search_no_results">没有结果</string>
+
     <!-- Item list -->
     <string name="item_search_hint">搜索衣物</string>
     <string name="item_list_empty">尚无衣物，点击 + 添加</string>

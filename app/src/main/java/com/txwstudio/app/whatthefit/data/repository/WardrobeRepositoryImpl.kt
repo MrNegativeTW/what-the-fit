@@ -131,6 +131,9 @@ class WardrobeRepositoryImpl @Inject constructor(
 
     override fun observeItemCount(): Flow<Int> = itemDao.observeCount()
 
+    override suspend fun searchClothes(query: String): List<ItemWithDetails> =
+        itemDao.searchItemsList(query)
+
     override suspend fun getAvailableItems(categoryId: Long): List<ClothingItem> =
         itemDao.getAvailableItemsByCategory(categoryId)
 

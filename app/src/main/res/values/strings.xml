@@ -66,6 +66,12 @@
     <string name="tag_add_title">Add</string>
     <string name="tag_delete_title">Delete “%1$s”?</string>
 
+    <!-- Search -->
+    <string name="search_hint">Search clothes &amp; OOTDs</string>
+    <string name="search_section_clothes">Clothes</string>
+    <string name="search_section_ootds">OOTDs</string>
+    <string name="search_no_results">No results</string>
+
     <!-- Item list -->
     <string name="item_search_hint">Search clothes</string>
     <string name="item_list_empty">No clothes yet. Tap + to add.</string>

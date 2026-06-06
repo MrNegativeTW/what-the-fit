@@ -28,6 +28,15 @@ interface ClothingItemDao {
     )
     fun pagingSearch(query: String): PagingSource<Int, ItemWithDetails>
 
+    /** Bounded one-shot search (name + notes) for the dedicated search screen. */
+    @Transaction
+    @Query(
+        "SELECT * FROM ClothingItem WHERE " +
+                "name LIKE '%' || :query || '%' OR notes LIKE '%' || :query || '%' " +
+                "ORDER BY name ASC, id ASC LIMIT 50",
+    )
+    suspend fun searchItemsList(query: String): List<ItemWithDetails>
+
     /**
      * Faceted search: name/notes text plus AND'd `EXISTS` clauses over the cross-ref tables.
      * The SQL is built dynamically in the repository (one clause per active dimension), so this
