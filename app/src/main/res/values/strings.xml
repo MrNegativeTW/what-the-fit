@@ -32,6 +32,7 @@
     <!-- Clothes tabs -->
     <string name="clothes_tab_items">Clothes</string>
     <string name="clothes_tab_parts">Parts</string>
+    <string name="clothes_tab_fit">Fit</string>
     <string name="clothes_tab_brands">Brands</string>
     <string name="clothes_tab_colors">Colors</string>
     <string name="clothes_tab_occasions">Occasions</string>
@@ -78,6 +79,7 @@
     <!-- Clothing fields -->
     <string name="item_field_colors">Colors</string>
     <string name="item_field_occasions">Occasions</string>
+    <string name="item_field_fit">Fit</string>
     <string name="item_field_brand">Brand</string>
     <string name="item_field_material">Material</string>
     <string name="item_field_notes">Notes</string>
@@ -94,6 +96,15 @@
     <string name="part_socks">Socks</string>
     <string name="part_shoes">Shoes</string>
 
+    <!-- Default fits (seeded on first launch) -->
+    <string name="fit_oversized">Oversized</string>
+    <string name="fit_loose">Loose</string>
+    <string name="fit_regular">Regular</string>
+    <string name="fit_slim">Slim</string>
+    <string name="fit_skinny">Skinny</string>
+    <string name="fit_boxy">Boxy</string>
+    <string name="fit_baggy">Baggy</string>
+
     <!-- Default colors (seeded on first launch) -->
     <string name="color_black">Black</string>
     <string name="color_white">White</string>
@@ -104,6 +115,14 @@
     <string name="occasion_work">Work</string>
     <string name="occasion_formal">Formal</string>
     <string name="occasion_sport">Sport</string>
+
+    <!-- Default clothes (seeded on first launch) -->
+    <string name="item_default_top_white">White</string>
+    <string name="item_default_top_black">Black</string>
+    <string name="item_default_jeans_black">Black Jeans</string>
+    <string name="item_default_jeans_white">White Jeans</string>
+    <string name="item_default_shoes_af1">Air Force 1</string>
+    <string name="item_default_shoes_boots">Boots</string>
 
     <!-- Settings -->
     <string name="settings_title">Settings</string>

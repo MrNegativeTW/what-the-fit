@@ -36,6 +36,7 @@ interface WardrobeRepository {
         brandIds: List<Long>,
         colorIds: List<Long>,
         occasionIds: List<Long>,
+        fitIds: List<Long>,
     ): PagingSource<Int, ItemWithDetails>
 
     fun observeItemCount(): Flow<Int>

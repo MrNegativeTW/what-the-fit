@@ -25,6 +25,7 @@ import kotlinx.coroutines.launch
 private val TAB_LABELS = listOf(
     R.string.clothes_tab_items,
     R.string.clothes_tab_parts,
+    R.string.clothes_tab_fit,
     R.string.clothes_tab_brands,
     R.string.clothes_tab_colors,
     R.string.clothes_tab_occasions,
@@ -70,8 +71,9 @@ fun ClothesScreen(
                 )
 
                 1 -> CategoryScreen()
-                2 -> TagListScreen(kind = TagKind.BRAND)
-                3 -> TagListScreen(kind = TagKind.COLOR)
+                2 -> TagListScreen(kind = TagKind.FIT)
+                3 -> TagListScreen(kind = TagKind.BRAND)
+                4 -> TagListScreen(kind = TagKind.COLOR)
                 else -> TagListScreen(kind = TagKind.OCCASION)
             }
         }

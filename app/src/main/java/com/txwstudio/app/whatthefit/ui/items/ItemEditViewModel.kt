@@ -36,6 +36,8 @@ class ItemEditViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
     val occasions: StateFlow<List<Tag>> = repository.observeTags(TagKind.OCCASION)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+    val fits: StateFlow<List<Tag>> = repository.observeTags(TagKind.FIT)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     var name by mutableStateOf("")
         private set

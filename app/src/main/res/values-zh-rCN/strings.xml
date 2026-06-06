@@ -32,6 +32,7 @@
     <!-- Clothes tabs -->
     <string name="clothes_tab_items">衣物</string>
     <string name="clothes_tab_parts">部位</string>
+    <string name="clothes_tab_fit">版型</string>
     <string name="clothes_tab_brands">品牌</string>
     <string name="clothes_tab_colors">颜色</string>
     <string name="clothes_tab_occasions">场合</string>
@@ -77,6 +78,7 @@
     <!-- Clothing fields -->
     <string name="item_field_colors">颜色</string>
     <string name="item_field_occasions">场合</string>
+    <string name="item_field_fit">版型</string>
     <string name="item_field_brand">品牌</string>
     <string name="item_field_material">材质</string>
     <string name="item_field_notes">备注</string>
@@ -93,6 +95,15 @@
     <string name="part_socks">袜子</string>
     <string name="part_shoes">鞋子</string>
 
+    <!-- Default fits (seeded on first launch) -->
+    <string name="fit_oversized">超大版型</string>
+    <string name="fit_loose">宽松</string>
+    <string name="fit_regular">标准</string>
+    <string name="fit_slim">修身</string>
+    <string name="fit_skinny">紧身</string>
+    <string name="fit_boxy">方正</string>
+    <string name="fit_baggy">宽垮</string>
+
     <!-- Default colors (seeded on first launch) -->
     <string name="color_black">黑</string>
     <string name="color_white">白</string>
@@ -103,6 +114,14 @@
     <string name="occasion_work">上班</string>
     <string name="occasion_formal">正式</string>
     <string name="occasion_sport">运动</string>
+
+    <!-- Default clothes (seeded on first launch) -->
+    <string name="item_default_top_white">白色</string>
+    <string name="item_default_top_black">黑色</string>
+    <string name="item_default_jeans_black">黑色牛仔裤</string>
+    <string name="item_default_jeans_white">白色牛仔裤</string>
+    <string name="item_default_shoes_af1">Air Force 1</string>
+    <string name="item_default_shoes_boots">靴子</string>
 
     <!-- Settings -->
     <string name="settings_title">设置</string>

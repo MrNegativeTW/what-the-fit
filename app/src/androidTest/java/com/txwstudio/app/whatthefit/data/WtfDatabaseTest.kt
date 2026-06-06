@@ -7,6 +7,7 @@ import androidx.paging.testing.asSnapshot
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.txwstudio.app.whatthefit.R
 import com.txwstudio.app.whatthefit.data.dao.CategoryDao
 import com.txwstudio.app.whatthefit.data.dao.ClothingItemDao
 import com.txwstudio.app.whatthefit.data.dao.CrossRefDao
@@ -250,8 +251,9 @@ class WtfDatabaseTest {
             brands: List<Long> = emptyList(),
             colors: List<Long> = emptyList(),
             occasions: List<Long> = emptyList(),
+            fits: List<Long> = emptyList(),
         ): Set<Long> = Pager(PagingConfig(pageSize = 20, enablePlaceholders = false)) {
-            repo.searchItems(q, cats, brands, colors, occasions)
+            repo.searchItems(q, cats, brands, colors, occasions, fits)
         }.flow.asSnapshot().map { it.item.id }.toSet()
 
         // No filter (fast path) → all three.
@@ -287,6 +289,25 @@ class WtfDatabaseTest {
 
             val brands = seeded.tagDao().observeByKind(TagKind.BRAND).first().map { it.name }
             assertEquals(WtfDatabase.DEFAULT_BRANDS, brands)
+
+            val fits = seeded.tagDao().observeByKind(TagKind.FIT).first().map { it.name }
+            assertEquals(WtfDatabase.DEFAULT_FIT_NAME_RES.map { context.getString(it) }, fits)
+
+            // Default clothes seed, linked to their part + color.
+            assertEquals(
+                WtfDatabase.DEFAULT_ITEMS.size,
+                seeded.clothingItemDao().observeCount().first(),
+            )
+            val topId = seeded.categoryDao().getAll()
+                .first { it.name == context.getString(R.string.part_top) }.id
+            val tops = seeded.clothingItemDao().getAvailableItemsByCategory(topId).map { it.name }
+            assertEquals(
+                setOf(
+                    context.getString(R.string.item_default_top_white),
+                    context.getString(R.string.item_default_top_black),
+                ),
+                tops.toSet(),
+            )
         } finally {
             seeded.close()
         }

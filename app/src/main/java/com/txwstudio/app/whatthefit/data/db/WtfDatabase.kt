@@ -72,12 +72,45 @@ abstract class WtfDatabase : RoomDatabase() {
             R.string.occasion_sport,
         )
 
+        val DEFAULT_FIT_NAME_RES = listOf(
+            R.string.fit_oversized,
+            R.string.fit_loose,
+            R.string.fit_regular,
+            R.string.fit_slim,
+            R.string.fit_skinny,
+            R.string.fit_boxy,
+            R.string.fit_baggy,
+        )
+
+        /** Default clothes: display-name resource with the part and color it links to. */
+        data class DefaultItem(val nameRes: Int, val partRes: Int, val colorRes: Int)
+
+        val DEFAULT_ITEMS = listOf(
+            DefaultItem(R.string.item_default_top_white, R.string.part_top, R.string.color_white),
+            DefaultItem(R.string.item_default_top_black, R.string.part_top, R.string.color_black),
+            DefaultItem(R.string.item_default_jeans_black, R.string.part_pants, R.string.color_black),
+            DefaultItem(R.string.item_default_jeans_white, R.string.part_pants, R.string.color_white),
+            DefaultItem(R.string.item_default_shoes_af1, R.string.part_shoes, R.string.color_white),
+            DefaultItem(R.string.item_default_shoes_boots, R.string.part_shoes, R.string.color_black),
+        )
+
         /** Seeds default categories + tags via raw SQL (DAOs aren't ready in onCreate). */
         fun seedCallback(context: Context): Callback = object : Callback() {
             override fun onCreate(db: SupportSQLiteDatabase) {
                 super.onCreate(db)
+
+                fun insertReturningId(sql: String, args: Array<Any>): Long {
+                    db.execSQL(sql, args)
+                    db.query("SELECT last_insert_rowid()").use { cursor ->
+                        cursor.moveToFirst()
+                        return cursor.getLong(0)
+                    }
+                }
+
+                // Keep part ids so the default clothes below can link to their category.
+                val partIds = HashMap<Int, Long>()
                 DEFAULT_PART_NAME_RES.forEachIndexed { index, nameRes ->
-                    db.execSQL(
+                    partIds[nameRes] = insertReturningId(
                         "INSERT INTO Category (name, sortOrder) VALUES (?, ?)",
                         arrayOf<Any>(context.getString(nameRes), index),
                     )
@@ -88,8 +121,10 @@ abstract class WtfDatabase : RoomDatabase() {
                         arrayOf<Any>(name, index),
                     )
                 }
+                // Keep color ids so the default clothes below can link to their color.
+                val colorIds = HashMap<Int, Long>()
                 DEFAULT_COLORS.forEachIndexed { index, (nameRes, argb) ->
-                    db.execSQL(
+                    colorIds[nameRes] = insertReturningId(
                         "INSERT INTO Tag (kind, name, sortOrder, swatchArgb) VALUES ('COLOR', ?, ?, ?)",
                         arrayOf<Any>(context.getString(nameRes), index, argb),
                     )
@@ -99,6 +134,30 @@ abstract class WtfDatabase : RoomDatabase() {
                         "INSERT INTO Tag (kind, name, sortOrder, swatchArgb) VALUES ('OCCASION', ?, ?, NULL)",
                         arrayOf<Any>(context.getString(nameRes), index),
                     )
+                }
+                DEFAULT_FIT_NAME_RES.forEachIndexed { index, nameRes ->
+                    db.execSQL(
+                        "INSERT INTO Tag (kind, name, sortOrder, swatchArgb) VALUES ('FIT', ?, ?, NULL)",
+                        arrayOf<Any>(context.getString(nameRes), index),
+                    )
+                }
+                DEFAULT_ITEMS.forEach { seed ->
+                    val itemId = insertReturningId(
+                        "INSERT INTO ClothingItem (name, isAvailable, seasons, notes) VALUES (?, 1, 0, '')",
+                        arrayOf<Any>(context.getString(seed.nameRes)),
+                    )
+                    partIds[seed.partRes]?.let { categoryId ->
+                        db.execSQL(
+                            "INSERT INTO ItemCategoryCrossRef (itemId, categoryId) VALUES (?, ?)",
+                            arrayOf<Any>(itemId, categoryId),
+                        )
+                    }
+                    colorIds[seed.colorRes]?.let { tagId ->
+                        db.execSQL(
+                            "INSERT INTO ItemTagCrossRef (itemId, tagId) VALUES (?, ?)",
+                            arrayOf<Any>(itemId, tagId),
+                        )
+                    }
                 }
             }
         }

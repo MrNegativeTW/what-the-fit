@@ -92,8 +92,11 @@ class WardrobeRepositoryImpl @Inject constructor(
         brandIds: List<Long>,
         colorIds: List<Long>,
         occasionIds: List<Long>,
+        fitIds: List<Long>,
     ): PagingSource<Int, ItemWithDetails> {
-        if (categoryIds.isEmpty() && brandIds.isEmpty() && colorIds.isEmpty() && occasionIds.isEmpty()) {
+        if (categoryIds.isEmpty() && brandIds.isEmpty() && colorIds.isEmpty() &&
+            occasionIds.isEmpty() && fitIds.isEmpty()
+        ) {
             return itemDao.pagingSearch(query)
         }
 
@@ -113,6 +116,7 @@ class WardrobeRepositoryImpl @Inject constructor(
         }
 
         appendExists("ItemCategoryCrossRef", "categoryId", categoryIds) // Parts
+        appendExists("ItemTagCrossRef", "tagId", fitIds) // Fit
         appendExists("ItemTagCrossRef", "tagId", brandIds) // Brands
         appendExists("ItemTagCrossRef", "tagId", colorIds) // Colors
         appendExists("ItemTagCrossRef", "tagId", occasionIds) // Occasions

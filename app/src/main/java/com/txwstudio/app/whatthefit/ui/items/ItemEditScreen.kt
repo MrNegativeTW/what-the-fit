@@ -54,6 +54,7 @@ fun ItemEditScreen(
     val brands by viewModel.brands.collectAsStateWithLifecycle()
     val colors by viewModel.colors.collectAsStateWithLifecycle()
     val occasions by viewModel.occasions.collectAsStateWithLifecycle()
+    val fits by viewModel.fits.collectAsStateWithLifecycle()
 
     ItemEditContent(
         isEditMode = viewModel.isEditMode,
@@ -64,6 +65,7 @@ fun ItemEditScreen(
         brands = brands,
         colors = colors,
         occasions = occasions,
+        fits = fits,
         selectedCategoryIds = viewModel.selectedCategoryIds,
         selectedTagIds = viewModel.selectedTagIds,
         selectedSeasons = viewModel.selectedSeasons,
@@ -91,6 +93,7 @@ fun ItemEditContent(
     brands: List<Tag>,
     colors: List<Tag>,
     occasions: List<Tag>,
+    fits: List<Tag>,
     selectedCategoryIds: Set<Long>,
     selectedTagIds: Set<Long>,
     selectedSeasons: Set<Int>,
@@ -175,6 +178,14 @@ fun ItemEditContent(
                 )
             }
 
+            if (fits.isNotEmpty()) {
+                Text(
+                    stringResource(R.string.item_field_fit),
+                    style = MaterialTheme.typography.titleSmall
+                )
+                TagChips(tags = fits, selectedIds = selectedTagIds, onToggle = onToggleTag)
+            }
+
             if (brands.isNotEmpty()) {
                 Text(
                     stringResource(R.string.item_field_brand),
@@ -247,6 +258,7 @@ private val sampleColors = listOf(
     Tag(id = 21, kind = TagKind.COLOR, name = "黑", swatchArgb = 0xFF000000L),
 )
 private val sampleOccasions = listOf(Tag(id = 30, kind = TagKind.OCCASION, name = "休閒"))
+private val sampleFits = listOf(Tag(id = 40, kind = TagKind.FIT, name = "寬鬆"))
 
 @Preview(name = "Item edit", showBackground = true)
 @Composable
@@ -261,6 +273,7 @@ private fun ItemEditContentPreview() {
             brands = sampleBrands,
             colors = sampleColors,
             occasions = sampleOccasions,
+            fits = sampleFits,
             selectedCategoryIds = setOf(1),
             selectedTagIds = setOf(10, 20),
             selectedSeasons = emptySet(),

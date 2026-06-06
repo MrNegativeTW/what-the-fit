@@ -75,10 +75,12 @@ fun ItemListScreen(
     val brands by viewModel.brands.collectAsStateWithLifecycle()
     val colors by viewModel.colors.collectAsStateWithLifecycle()
     val occasions by viewModel.occasions.collectAsStateWithLifecycle()
+    val fits by viewModel.fits.collectAsStateWithLifecycle()
     val selectedCategoryIds by viewModel.selectedCategoryIds.collectAsStateWithLifecycle()
     val selectedBrandIds by viewModel.selectedBrandIds.collectAsStateWithLifecycle()
     val selectedColorIds by viewModel.selectedColorIds.collectAsStateWithLifecycle()
     val selectedOccasionIds by viewModel.selectedOccasionIds.collectAsStateWithLifecycle()
+    val selectedFitIds by viewModel.selectedFitIds.collectAsStateWithLifecycle()
 
     ItemListContent(
         items = items,
@@ -87,14 +89,17 @@ fun ItemListScreen(
         brands = brands,
         colors = colors,
         occasions = occasions,
+        fits = fits,
         selectedCategoryIds = selectedCategoryIds,
         selectedBrandIds = selectedBrandIds,
         selectedColorIds = selectedColorIds,
         selectedOccasionIds = selectedOccasionIds,
+        selectedFitIds = selectedFitIds,
         onToggleCategory = viewModel::toggleCategory,
         onToggleBrand = viewModel::toggleBrand,
         onToggleColor = viewModel::toggleColor,
         onToggleOccasion = viewModel::toggleOccasion,
+        onToggleFit = viewModel::toggleFit,
         onAddItem = onAddItem,
         onEditItem = onEditItem,
         onToggleAvailable = viewModel::setAvailability,
@@ -111,14 +116,17 @@ fun ItemListContent(
     brands: List<Tag>,
     colors: List<Tag>,
     occasions: List<Tag>,
+    fits: List<Tag>,
     selectedCategoryIds: Set<Long>,
     selectedBrandIds: Set<Long>,
     selectedColorIds: Set<Long>,
     selectedOccasionIds: Set<Long>,
+    selectedFitIds: Set<Long>,
     onToggleCategory: (Long) -> Unit,
     onToggleBrand: (Long) -> Unit,
     onToggleColor: (Long) -> Unit,
     onToggleOccasion: (Long) -> Unit,
+    onToggleFit: (Long) -> Unit,
     onAddItem: () -> Unit,
     onEditItem: (Long) -> Unit,
     onToggleAvailable: (Long, Boolean) -> Unit,
@@ -148,6 +156,14 @@ fun ItemListContent(
                         },
                         selectedIds = selectedCategoryIds,
                         onToggle = onToggleCategory,
+                    )
+                }
+                if (fits.isNotEmpty()) {
+                    FilterChipMenu(
+                        labelRes = R.string.item_field_fit,
+                        options = fits.map { FilterOption(it.id, it.name, it.swatchArgb) },
+                        selectedIds = selectedFitIds,
+                        onToggle = onToggleFit,
                     )
                 }
                 if (brands.isNotEmpty()) {
@@ -343,14 +359,17 @@ private fun ItemListContentPreview() {
             brands = sampleBrands,
             colors = sampleColors,
             occasions = emptyList(),
+            fits = emptyList(),
             selectedCategoryIds = emptySet(),
             selectedBrandIds = emptySet(),
             selectedColorIds = emptySet(),
             selectedOccasionIds = emptySet(),
+            selectedFitIds = emptySet(),
             onToggleCategory = {},
             onToggleBrand = {},
             onToggleColor = {},
             onToggleOccasion = {},
+            onToggleFit = {},
             onAddItem = {},
             onEditItem = {},
             onToggleAvailable = { _, _ -> },

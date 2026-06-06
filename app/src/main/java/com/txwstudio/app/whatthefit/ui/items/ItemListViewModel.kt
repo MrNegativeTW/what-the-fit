@@ -40,10 +40,12 @@ class ItemListViewModel @Inject constructor(
     private val _selectedBrandIds = MutableStateFlow<Set<Long>>(emptySet())
     private val _selectedColorIds = MutableStateFlow<Set<Long>>(emptySet())
     private val _selectedOccasionIds = MutableStateFlow<Set<Long>>(emptySet())
+    private val _selectedFitIds = MutableStateFlow<Set<Long>>(emptySet())
     val selectedCategoryIds = _selectedCategoryIds.asStateFlow()
     val selectedBrandIds = _selectedBrandIds.asStateFlow()
     val selectedColorIds = _selectedColorIds.asStateFlow()
     val selectedOccasionIds = _selectedOccasionIds.asStateFlow()
+    val selectedFitIds = _selectedFitIds.asStateFlow()
 
     // Label sources for the filter chip rows.
     val categories: StateFlow<List<Category>> = repository.observeCategories()
@@ -54,28 +56,33 @@ class ItemListViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
     val occasions: StateFlow<List<Tag>> = repository.observeTags(TagKind.OCCASION)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+    val fits: StateFlow<List<Tag>> = repository.observeTags(TagKind.FIT)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
-    /** True when a text query or any filter is active — picks the "no match" vs "empty" message. */
-    val isFiltering: StateFlow<Boolean> = combine(
-        _query,
+    // The five label dimensions folded into one flow first: combine() tops out at five sources,
+    // and the search query needs to join them, so the filter sets are merged here.
+    // sorted() makes each key stable so distinctUntilChanged() downstream skips no-op rebuilds.
+    private val filters: Flow<Filters> = combine(
         _selectedCategoryIds,
         _selectedBrandIds,
         _selectedColorIds,
         _selectedOccasionIds,
-    ) { q, catIds, brandIds, colorIds, occIds ->
-        q.isNotBlank() || catIds.isNotEmpty() || brandIds.isNotEmpty() ||
-                colorIds.isNotEmpty() || occIds.isNotEmpty()
+        _selectedFitIds,
+    ) { catIds, brandIds, colorIds, occIds, fitIds ->
+        Filters(catIds.sorted(), brandIds.sorted(), colorIds.sorted(), occIds.sorted(), fitIds.sorted())
+    }
+
+    /** True when a text query or any filter is active — picks the "no match" vs "empty" message. */
+    val isFiltering: StateFlow<Boolean> = combine(_query, filters) { q, f ->
+        q.isNotBlank() || f.categoryIds.isNotEmpty() || f.brandIds.isNotEmpty() ||
+                f.colorIds.isNotEmpty() || f.occasionIds.isNotEmpty() || f.fitIds.isNotEmpty()
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
     val items: Flow<PagingData<ItemWithDetails>> = combine(
         _query.debounce(300), // only the text is debounced; filters apply immediately
-        _selectedCategoryIds,
-        _selectedBrandIds,
-        _selectedColorIds,
-        _selectedOccasionIds,
-    ) { q, catIds, brandIds, colorIds, occIds ->
-        // sorted() makes the key stable so distinctUntilChanged() skips no-op rebuilds.
-        Criteria(q, catIds.sorted(), brandIds.sorted(), colorIds.sorted(), occIds.sorted())
+        filters,
+    ) { q, f ->
+        Criteria(q, f.categoryIds, f.brandIds, f.colorIds, f.occasionIds, f.fitIds)
     }
         .distinctUntilChanged()
         .flatMapLatest { c ->
@@ -85,7 +92,8 @@ class ItemListViewModel @Inject constructor(
                     c.categoryIds,
                     c.brandIds,
                     c.colorIds,
-                    c.occasionIds
+                    c.occasionIds,
+                    c.fitIds,
                 )
             }.flow
         }
@@ -99,10 +107,19 @@ class ItemListViewModel @Inject constructor(
     fun toggleBrand(id: Long) = _selectedBrandIds.update { it.toggled(id) }
     fun toggleColor(id: Long) = _selectedColorIds.update { it.toggled(id) }
     fun toggleOccasion(id: Long) = _selectedOccasionIds.update { it.toggled(id) }
+    fun toggleFit(id: Long) = _selectedFitIds.update { it.toggled(id) }
 
     fun setAvailability(id: Long, available: Boolean) {
         viewModelScope.launch { repository.setAvailability(id, available) }
     }
+
+    private data class Filters(
+        val categoryIds: List<Long>,
+        val brandIds: List<Long>,
+        val colorIds: List<Long>,
+        val occasionIds: List<Long>,
+        val fitIds: List<Long>,
+    )
 
     private data class Criteria(
         val query: String,
@@ -110,6 +127,7 @@ class ItemListViewModel @Inject constructor(
         val brandIds: List<Long>,
         val colorIds: List<Long>,
         val occasionIds: List<Long>,
+        val fitIds: List<Long>,
     )
 }
 
