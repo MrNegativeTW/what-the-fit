@@ -78,6 +78,8 @@
     <string name="item_list_no_match">找不到符合的衣物</string>
     <string name="item_add">新增衣物</string>
     <string name="item_uncategorized">未分類</string>
+    <string name="cd_section_expanded">已展開</string>
+    <string name="cd_section_collapsed">已收合</string>
 
     <!-- Item edit -->
     <string name="item_edit_title_add">新增衣物</string>

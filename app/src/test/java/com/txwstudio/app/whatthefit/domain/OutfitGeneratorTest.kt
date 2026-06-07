@@ -46,6 +46,13 @@ class OutfitGeneratorTest {
             occasionIds: List<Long>,
             fitIds: List<Long>,
         ): PagingSource<Int, ItemWithDetails> = error("unused")
+        override fun observeMatchingItems(
+            query: String,
+            brandIds: List<Long>,
+            colorIds: List<Long>,
+            occasionIds: List<Long>,
+            fitIds: List<Long>,
+        ): Flow<List<ItemWithDetails>> = error("unused")
         override fun observeItemCount(): Flow<Int> = error("unused")
         override suspend fun searchClothes(query: String) = error("unused")
         override suspend fun getItemWithDetails(id: Long): ItemWithDetails? = error("unused")

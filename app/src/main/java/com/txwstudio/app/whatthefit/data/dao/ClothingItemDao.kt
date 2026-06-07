@@ -55,6 +55,23 @@ interface ClothingItemDao {
     )
     fun pagingSearchFiltered(query: SupportSQLiteQuery): PagingSource<Int, ItemWithDetails>
 
+    /**
+     * Real-time faceted search returning the full matching set (not paged), for the grouped Clothes
+     * list. Same dynamically-built SQL as [pagingSearchFiltered]; [observedEntities] lists every
+     * table the SQL can touch so the flow re-emits when items, their links, or names change.
+     */
+    @Transaction
+    @RawQuery(
+        observedEntities = [
+            ClothingItem::class,
+            Category::class,
+            Tag::class,
+            ItemCategoryCrossRef::class,
+            ItemTagCrossRef::class,
+        ],
+    )
+    fun observeItemsFiltered(query: SupportSQLiteQuery): Flow<List<ItemWithDetails>>
+
     /** Available (not in laundry) items linked to [categoryId] — the core generation pool. */
     @Query(
         "SELECT ci.* FROM ClothingItem ci " +

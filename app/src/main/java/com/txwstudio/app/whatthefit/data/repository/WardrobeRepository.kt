@@ -41,6 +41,18 @@ interface WardrobeRepository {
         fitIds: List<Long>,
     ): PagingSource<Int, ItemWithDetails>
 
+    /**
+     * Real-time, non-paged matching set for the grouped Clothes list. Text + tag facets only —
+     * parts is the grouping axis, not a filter. Empty query and facets returns every item.
+     */
+    fun observeMatchingItems(
+        query: String,
+        brandIds: List<Long>,
+        colorIds: List<Long>,
+        occasionIds: List<Long>,
+        fitIds: List<Long>,
+    ): Flow<List<ItemWithDetails>>
+
     fun observeItemCount(): Flow<Int>
     suspend fun searchClothes(query: String): List<ItemWithDetails>
     suspend fun getAvailableItems(categoryId: Long): List<ClothingItem>

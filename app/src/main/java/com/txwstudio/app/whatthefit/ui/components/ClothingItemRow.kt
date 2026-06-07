@@ -20,15 +20,17 @@ import com.txwstudio.app.whatthefit.data.entity.ItemWithDetails
 import com.txwstudio.app.whatthefit.domain.model.TagKind
 
 /**
- * One clothing item as a list row: name with inline color swatches and a "brand · parts" subtitle.
- * [trailing] fills the end of the row; the wardrobe list passes an availability Switch, search passes
- * nothing for a read-only row.
+ * One clothing item as a list row: name with inline color swatches and a subtitle of brand and,
+ * when [showParts], its part names. Callers that already group by part (the grouped wardrobe list)
+ * pass `showParts = false` to drop the redundant part text. [trailing] fills the end of the row; the
+ * wardrobe list passes an availability Switch, search passes nothing for a read-only row.
  */
 @Composable
 fun ClothingItemRow(
     item: ItemWithDetails,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    showParts: Boolean = true,
     trailing: (@Composable () -> Unit)? = null,
 ) {
     Row(
@@ -51,18 +53,28 @@ fun ClothingItemRow(
                     }
                 }
             }
-            val categoryText = if (item.categories.isEmpty()) {
-                stringResource(R.string.item_uncategorized)
-            } else {
-                item.categories.joinToString("、") { it.name }
-            }
             val brandText =
                 item.tags.filter { it.kind == TagKind.BRAND }.joinToString(" / ") { it.name }
-            Text(
-                text = if (brandText.isNotBlank()) "$brandText · $categoryText" else categoryText,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+            val categoryText = if (showParts) {
+                if (item.categories.isEmpty()) {
+                    stringResource(R.string.item_uncategorized)
+                } else {
+                    item.categories.joinToString("、") { it.name }
+                }
+            } else {
+                null
+            }
+            val subtitle = listOfNotNull(
+                brandText.takeIf { it.isNotBlank() },
+                categoryText,
+            ).joinToString(" · ")
+            if (subtitle.isNotBlank()) {
+                Text(
+                    text = subtitle,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
         }
         trailing?.invoke()
     }

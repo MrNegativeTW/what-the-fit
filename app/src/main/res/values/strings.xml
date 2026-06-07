@@ -78,6 +78,8 @@
     <string name="item_list_no_match">No matching clothes</string>
     <string name="item_add">Add clothing</string>
     <string name="item_uncategorized">Uncategorized</string>
+    <string name="cd_section_expanded">Expanded</string>
+    <string name="cd_section_collapsed">Collapsed</string>
 
     <!-- Item edit -->
     <string name="item_edit_title_add">Add Clothing</string>

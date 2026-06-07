@@ -87,8 +87,7 @@ class WardrobeRepositoryImpl @Inject constructor(
     /**
      * Text search (name/notes) combined with a faceted label filter: AND across dimensions, OR
      * within one. With no filters active we use the typed [ClothingItemDao.pagingSearch]; otherwise
-     * we build a raw query that appends one `EXISTS` clause per non-empty dimension. Empty lists are
-     * skipped (never emitted as `IN ()`), and `?` binds are appended in clause order.
+     * we delegate to [buildFilteredQuery] and the raw paged source.
      */
     override fun searchItems(
         query: String,
@@ -103,7 +102,34 @@ class WardrobeRepositoryImpl @Inject constructor(
         ) {
             return itemDao.pagingSearch(query)
         }
+        return itemDao.pagingSearchFiltered(
+            buildFilteredQuery(query, categoryIds, brandIds, colorIds, occasionIds, fitIds),
+        )
+    }
 
+    override fun observeMatchingItems(
+        query: String,
+        brandIds: List<Long>,
+        colorIds: List<Long>,
+        occasionIds: List<Long>,
+        fitIds: List<Long>,
+    ): Flow<List<ItemWithDetails>> = itemDao.observeItemsFiltered(
+        buildFilteredQuery(query, emptyList(), brandIds, colorIds, occasionIds, fitIds),
+    )
+
+    /**
+     * Faceted SQL shared by [searchItems] and [observeMatchingItems]: name/notes text plus one AND'd
+     * `EXISTS` clause per non-empty dimension (OR within a dimension). Empty lists are skipped (never
+     * emitted as `IN ()`), and `?` binds are appended in clause order.
+     */
+    private fun buildFilteredQuery(
+        query: String,
+        categoryIds: List<Long>,
+        brandIds: List<Long>,
+        colorIds: List<Long>,
+        occasionIds: List<Long>,
+        fitIds: List<Long>,
+    ): SimpleSQLiteQuery {
         val sql = StringBuilder(
             "SELECT * FROM ClothingItem WHERE (name LIKE '%' || ? || '%' OR notes LIKE '%' || ? || '%')",
         )
@@ -126,7 +152,7 @@ class WardrobeRepositoryImpl @Inject constructor(
         appendExists("ItemTagCrossRef", "tagId", occasionIds) // Occasions
         sql.append(" ORDER BY name ASC, id ASC")
 
-        return itemDao.pagingSearchFiltered(SimpleSQLiteQuery(sql.toString(), args.toTypedArray()))
+        return SimpleSQLiteQuery(sql.toString(), args.toTypedArray())
     }
 
     override fun observeItemCount(): Flow<Int> = itemDao.observeCount()
